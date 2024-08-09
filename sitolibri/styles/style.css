@@ -1,0 +1,96 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body{
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  padding-top: 47px;
+  padding-left: 10px;
+}
+
+.topnav{
+  display: flex;
+  background-color: brown;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+}
+
+.topnav > *{
+  color: wheat;
+  text-decoration: none;
+  padding: 14px 12px;
+}
+
+.topnav a{
+  transition: color 300ms,background-color 300ms;
+}
+
+.topnav a:hover {
+  background-color: wheat;
+  color: brown;
+}
+
+/*Ciò che segue è il css per i comandi CRUD*/
+
+.crud-bar{
+  display: flex;
+}
+
+.icon-crud{
+  border-radius: 8px;
+}
+.icon-crud img{
+  width: 30px;
+  vertical-align: middle;
+}
+
+.icon-crud p{
+  display: inline-block;
+  margin: 0px;
+  padding: 10px 0px;
+}
+
+.icon-crud:hover{
+  background-color: rgba(255, 246, 174, 0.537);
+}
+
+.spazio-libri{
+  display: flex;
+  flex-wrap: wrap;
+  text-align: center;
+  gap: 20px;
+  padding: 1em;
+}
+
+.libro{
+  flex-basis: 130px;
+}
+
+.libro *{
+  margin: 0;
+}
+
+.scheda-dettagli{
+  display: flex;
+  gap: 1em;
+  position: fixed;
+  background-color: rgb(251, 235, 206);
+  opacity: 1;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  height: auto;
+  z-index: -1;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.boh img{
+  max-width: 200px;
+}
