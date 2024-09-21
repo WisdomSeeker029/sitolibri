@@ -2,15 +2,18 @@ import { booksOnLoan } from "../../data/books.js";
 
 export function renderBooksOnLoan(){
   let booksHTML = '';
-  booksOnLoan.forEach((book) => {
-    booksHTML += `
-    <div class="libro" data-book-id="${book.key}">
-      <img width="100%" src="img/books/book.jpg" alt="libro">
-      <h4>${book.title}</h4>
-      <h5>${book.author_name}</h5>
-    </div>
-  `;
-  })
+  console.log(booksOnLoan);
+  if(booksOnLoan){
+    booksOnLoan.forEach((book) => {
+      booksHTML += `
+      <div class="libro" data-book-id="${book.key}">
+        <img width="100%" src="img/books/book.jpg" alt="libro">
+        <h4>${book.title}</h4>
+        <h5>${book.author_name}</h5>
+      </div>
+    `;
+    });
+  }
   
   document.querySelector('.spazio-libri').innerHTML = booksHTML;
 
@@ -23,8 +26,12 @@ export function renderBooksOnLoan(){
   });
 }
 
+export function getBooksOnLoan(){
+  return booksOnLoan;
+}
+
 function apriDettagli(){
-  let dettagli = document.querySelector('.scheda-dettagli');
+  let dettagli = document.querySelector('.crud-finestra');
   dettagli.classList.add('show');
 
   //per chiudere i dettagli
@@ -35,7 +42,7 @@ function apriDettagli(){
 }
 
 function chiudiDettagli(){
-  let dettagli = document.querySelector('.scheda-dettagli');
+  let dettagli = document.querySelector('.crud-finestra');
   dettagli.classList.remove('show');
 }
 
@@ -61,6 +68,6 @@ export function renderBooksDetails(bookId){
       </div>
       `;
     };
-    document.querySelector('.scheda-dettagli').innerHTML = booksDetailsHTML;
-  })
+    document.querySelector('.crud-finestra').innerHTML = booksDetailsHTML;
+  });
 }

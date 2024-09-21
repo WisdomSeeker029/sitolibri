@@ -1,5 +1,6 @@
-import { booksOnLoan } from "../../data/books.js";
-import { renderBooksOnLoan } from "./onLoan.js";
+import { returnBook,loanBook } from "../../data/books.js";
+import {getBooksOnLoan, renderBooksOnLoan } from "./onLoan.js";
+
 export function renderCrudMenu(){
   let crudMenuHTML = '';
   crudMenuHTML += `
@@ -21,9 +22,7 @@ export function renderCrudMenu(){
     </span>
   `;
   document.querySelector('.crud-bar').innerHTML = crudMenuHTML;
-
-  renderAddBook();
-
+  
   //se questi bottoni vengono inizializzati prima sono null perchè non sono ancora stati renderizzati
   const addBookButton = document.querySelector('.js-add-book');
   const deleteBookButton = document.querySelector('.js-delete-book');
@@ -31,12 +30,19 @@ export function renderCrudMenu(){
   const viewBookButton = document.querySelector('.js-view-book');
   const resultsBox = document.querySelector('.js-book-results');
   const searchInput = document.querySelector('.search-input');
-  const searchButton = document.querySelector('.search-book-button');
 
   addBookButton.addEventListener('click', () => {
-    document.querySelector('.popup-add-book').classList.add('show');
+    document.querySelector('.crud-finestra').classList.add('show');
+    renderAddBook();
+    renderCrudMenu(); //rigenerare il crudMenu risolve il fatto che searchButton sia null prima che sia generata la finestra per aprire l'addBook 
   });
 
+  deleteBookButton.addEventListener('click', () => {
+    renderDeleteBookPopup();
+    renderCrudMenu(); //rigenerare il crudMenu risolve il fatto che searchButton sia null prima che sia generata la finestra per aprire l'addBook 
+  });
+
+  const searchButton = document.querySelector('.search-book-button');
   searchButton.addEventListener('click', async () => {
     const query = searchInput.value.trim();
     if(query){
@@ -48,6 +54,7 @@ export function renderCrudMenu(){
             button.addEventListener('click', () => {
               const {bookId} = button.dataset;
               loanBook(bookId,results);
+              renderBooksOnLoan();
             });
           })
       } catch (error) {
@@ -87,26 +94,6 @@ export function renderCrudMenu(){
       `).join('');
     resultsBox.innerHTML = booksHTML;
   }
-
-  //funzione per etichettare come in prestito i libri
-  function loanBook(bookId,results){
-    results.forEach((book) => {
-      const key = book.edition_key[0];
-       if(key == bookId){
-        console.log(key);
-        // await getWork();
-        booksOnLoan.push(
-          {
-            title : book.title || 'Sconosciuto',
-            author_name: book.author_name[0]|| 'Sconosciuto',
-            key
-          }
-        );
-      };
-    });
-    console.log(booksOnLoan);
-    renderBooksOnLoan();
-  }
 }
 
 function renderAddBook(){
@@ -122,5 +109,39 @@ function renderAddBook(){
       </div>
     </div>
     <div class="book-results js-book-results"></div>`;
-  document.querySelector('.popup-add-book').innerHTML += popupHTML;
+  let window = document.querySelector('.crud-finestra');
+  window.innerHTML = popupHTML;
+}
+
+function renderDeleteBookPopup(){
+  let booksHTML = "";
+  getBooksOnLoan().forEach((book) => {
+    booksHTML += `
+      <div class="book">
+        <p>Titolo: <b>${book.title}</b></p>
+        <p>Autore: ${book.author_name}</p>
+        <button class="js-delete-book-button" data-book-id="${book.key}">Restituisci libro</button>
+      </div>`;
+  });
+  let popupHTML = `
+    <div class="chiudi">
+      <img src="img/details/closure-details.png" alt="chiudi dettagli">
+    </div>
+    <div class="book-results js-book-results"></div>
+  `;
+  // popupHTML += booksHTML;
+  document.querySelector('.crud-finestra').innerHTML = popupHTML;
+  if(!document.querySelector('.crud-finestra').classList.contains('show')){
+    document.querySelector('.crud-finestra').classList.add('show');
+  }
+  document.querySelector('.js-book-results').innerHTML = booksHTML; 
+
+  document.querySelectorAll('.js-delete-book-button').forEach((button) => {
+    button.addEventListener('click', () => {
+      const {bookId} = button.dataset;
+      console.log(bookId);
+      returnBook(bookId);
+      renderBooksOnLoan();
+    })
+  })
 }

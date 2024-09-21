@@ -9,7 +9,6 @@ body{
   font-family: Arial, Helvetica, sans-serif;
   padding-top: 47px;
   padding-left: 10px;
-  height: 30000px;
 }
 
 .topnav{
@@ -62,7 +61,7 @@ body{
   background-color: rgba(255, 246, 174, 0.537);
 }
 
-.popup-add-book{
+.crud-finestra{
   display: none;
   flex-direction: column;
   flex-basis: 100px;
@@ -92,20 +91,12 @@ body{
   overflow-x: scroll;
 }
 
-.scheda-dettagli{
-  display: none;
-  gap: 1em;
-  position: absolute;
-  background-color: rgb(251, 235, 206);
-  opacity: 1;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+.books-on-loan-list{
+  background-color: white;
+  /* max-height: auto; */
+  max-height: 200px;
   width: auto;
-  height: auto;
-  /* z-index: 1; */
-  border-radius: 6px;
-  padding: 10px;
+  overflow-x: scroll;
 }
 
 .spazio-libri{
