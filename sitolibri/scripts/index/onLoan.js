@@ -63,7 +63,7 @@ export function renderBooksDetails(bookId){
         </p>
         <p class="autore">${book.author_name}</p>
         <p class="descrizione">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam blanditiis sint odio natus possimus consequuntur quasi quod soluta voluptates minus quos non, enim mollitia asperiores deserunt, inventore sequi rem commodi.
+          ${book.description || 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam blanditiis sint odio natus possimus consequuntur quasi quod soluta voluptates minus quos non, enim mollitia asperiores deserunt, inventore sequi rem commodi.'}
         </p>
       </div>
       `;

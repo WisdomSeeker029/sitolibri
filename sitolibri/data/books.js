@@ -1,4 +1,4 @@
-import { renderBooksOnLoan } from "../scripts/index/onLoan.js";
+import { getDescription } from "../scripts/index/crudMenu.js";
 
 export let booksOnLoan = [];
 
@@ -17,7 +17,7 @@ function loadFromStorage() {
 
 //funzione per etichettare come in prestito i libri
 export function loanBook(bookId,results){
-  results.forEach((book) => {
+  results.forEach(async (book) => {
     const key = book.edition_key[0];
      if(key == bookId){
       console.log(key);
@@ -26,7 +26,8 @@ export function loanBook(bookId,results){
         {
           title : book.title || 'Sconosciuto',
           author_name: book.author_name[0] || 'Sconosciuto',
-          key
+          key, //non è il key dell'edizione
+          description : await getDescription(key) || 'La descrizione non è disponibile'
         }
       );
       saveToStorage();
