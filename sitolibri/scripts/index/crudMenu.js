@@ -1,5 +1,7 @@
-import { returnBook,loanBook } from "../../data/books.js";
-import {getBooksOnLoan, renderBooksOnLoan } from "./onLoan.js";
+import { returnBook,borrowBook } from "../../data/books.js";
+import {borrowedBooks, renderBorrowedBooks } from "../../data/books.js";
+import {searchBooks} from "./crudMenu/ricerche.js";
+import {renderWindow,displayBookList} from "../utils/finestra.js";
 
 export function renderCrudMenu(){
   let crudMenuHTML = '';
@@ -28,13 +30,13 @@ export function renderCrudMenu(){
   const deleteBookButton = document.querySelector('.js-delete-book');
   const editBookButton = document.querySelector('.js-edit-book');
   const viewBookButton = document.querySelector('.js-view-book');
-  const resultsBox = document.querySelector('.js-book-results');
+  const resultsBox = document.querySelector('.js-book-list');
   const searchInput = document.querySelector('.search-input');
 
   addBookButton.addEventListener('click', () => {
     document.querySelector('.crud-finestra').classList.add('show');
     renderAddBook();
-    renderCrudMenu(); //rigenerare il crudMenu risolve il fatto che searchButton sia null prima che sia generata la finestra per aprire l'addBook 
+    renderCrudMenu(); //rigenerare il crudMenu risolve il fatto che searchButton sia null prima che sia generata la finestra per aprire l'addBook
   });
 
   deleteBookButton.addEventListener('click', () => {
@@ -53,8 +55,8 @@ export function renderCrudMenu(){
           .forEach((button) => {
             button.addEventListener('click', async () => {
               const {bookId} = button.dataset;
-              await loanBook(bookId,results);
-              renderBooksOnLoan();
+              await borrowBook(bookId,results);
+              renderBorrowedBooks();
             });
           })
       } catch (error) {
@@ -64,18 +66,6 @@ export function renderCrudMenu(){
     }
   });
 
-  //funzione per effettuare la ricerca
-   async function searchBooks(query){
-    // fetch() è un metodo che permette di effettuare richieste di rete
-    // Qui viene utilizzato per fare una richiesta GET all'API di Open Library
-    // encodeURIComponent() assicura che la query sia codificata correttamente nell'URL
-    const response = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}`);
-    if(!response.ok){
-      throw new Error('Errore nella risposta della rete');
-    }
-    const data = await response.json();
-    return data.docs;
-  }
 
 //funzione per visualizzare i risultati
   function displayResults(books) {
@@ -97,71 +87,29 @@ export function renderCrudMenu(){
 }
 
 function renderAddBook(){
-  let popupHTML = '';
-  popupHTML += 
-    `<div class="chiudi">
-      <img src="img/details/closure-details.png" alt="chiudi dettagli">
-    </div>
+  let contentHTML = `
     <div class="add-book-wrapper">
       <div class ="search-book-container">
         <input type="search" class="search-input" placeholder="Cerca libro...">
         <input type="button" class="search-book-button" value="Cerca">
       </div>
     </div>
-    <div class="book-results js-book-results"></div>`;
-  let window = document.querySelector('.crud-finestra');
-  window.innerHTML = popupHTML;
+  `;
+  renderWindow(contentHTML);
 }
 
 function renderDeleteBookPopup(){
-  let booksHTML = "";
-  getBooksOnLoan().forEach((book) => {
-    booksHTML += `
-      <div class="book">
-        <p>Titolo: <b>${book.title}</b></p>
-        <p>Autore: ${book.author_name}</p>
-        <button class="js-delete-book-button" data-book-id="${book.key}">Restituisci libro</button>
-      </div>`;
-  });
-  let popupHTML = `
-    <div class="chiudi">
-      <img src="img/details/closure-details.png" alt="chiudi dettagli">
-    </div>
-    <div class="book-results js-book-results"></div>
-  `;
-  // popupHTML += booksHTML;
-  document.querySelector('.crud-finestra').innerHTML = popupHTML;
-  if(!document.querySelector('.crud-finestra').classList.contains('show')){
-    document.querySelector('.crud-finestra').classList.add('show');
-  }
-  document.querySelector('.js-book-results').innerHTML = booksHTML; 
+  const action_class = 'delete-book-button';
+  const actionbtn_content = 'Restituisci libro';
+  displayBookList(borrowedBooks,action_class,actionbtn_content);
+
 
   document.querySelectorAll('.js-delete-book-button').forEach((button) => {
     button.addEventListener('click', () => {
       const {bookId} = button.dataset;
       console.log(bookId);
       returnBook(bookId);
-      renderBooksOnLoan();
+      renderBorrowedBooks();
     })
   })
-}
-
-  /* Questa funzione prende il key del .docs, il che gli permetterà di fare il fetch di uno dei works e trarre da esso, se reperibile, la descrizione */
- export async function getDescription(book_key){
-  console.log(book_key);
-  const response = await fetch(`https://openlibrary.org/books/${book_key}.json`);
-  // if(!response.ok){
-  //   throw new Error('Errore nella risposta della rete');
-  // }
-  const data = await response.json();
-  console.log(data);
-  const work_key = data.works[0].key;
-  if(work_key){
-    const responseWork = await fetch(`https://openlibrary.org${work_key}.json`);
-    const data = await responseWork.json();
-    const descrizione = data.description;
-    //  || "La descrizione dell'opera non è reperibile";
-    console.log(descrizione);
-    return descrizione;
-  }
 }

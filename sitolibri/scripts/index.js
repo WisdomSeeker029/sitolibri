@@ -1,6 +1,6 @@
 import { renderTopNav } from "./index/topNav.js";
 import {renderCrudMenu} from "./index/crudMenu.js";
-import { renderBooksOnLoan } from "./index/onLoan.js";
+import { renderBorrowedBooks } from "../data/books.js";
 renderTopNav();
-renderBooksOnLoan();
+renderBorrowedBooks();
 renderCrudMenu();
