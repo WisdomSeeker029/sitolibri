@@ -4,6 +4,7 @@ export function renderWindow(content){
   if(!content){
     content = "";
   }
+  
   const finestra = document.querySelector('.crud-finestra');
 
   const finestraHTML = `
@@ -35,19 +36,4 @@ export function renderWindow(content){
   if(!finestra.classList.contains('show')){
     displayWindow();
   }
-}
-
-export function displayBookList(borrowedBooks,action_class,actionbtn_content){
-  renderWindow();
-  const book_list = document.querySelector('.js-book-list');
-  let booksHTML = "";
-  borrowedBooks.map((book) => {
-    booksHTML += `
-    <div class="book">
-      <p>Titolo: <b>${book.title}</b></p>
-      <p>Autore: ${book.author_name}</p>
-      <button class="js-${action_class}" data-book-id="${book.key}">${actionbtn_content}</button>
-    </div>`;
-  });
-  book_list.innerHTML = booksHTML;
 }

@@ -42,15 +42,32 @@ function saveToStorage() {
 }
 
 export function returnBook(key){
-  let newborrowedBooks = [];
+  let newBorrowedBooks = [];
   borrowedBooks.forEach((book) => {
     if(book.key !== key){
-      newborrowedBooks.push(book);
+      newBorrowedBooks.push(book);
     }
   });
-  borrowedBooks = newborrowedBooks;
+  borrowedBooks = newBorrowedBooks;
   saveToStorage();
   loadFromStorage();
+}
+
+export function updateBookDetails(key,newBookDetails){
+  /*Non è possibile riassegnare l'oggetto originale del vettore quando si usa forEach, quindi ciò che segue è codice errato: 
+  borrowedBooks.forEach((book)=> {
+    if(book.key == key){
+      book = newBookDetails;
+      saveToStorage();
+    }
+  });
+  IL metodo corretto è il seguente
+  */ 
+  const index = borrowedBooks.findIndex(book => book.key === key);
+  if (index !== -1) { //ovvero se non trova il key nel vettore
+    borrowedBooks[index] = newBookDetails;
+    saveToStorage();
+  }
 }
 
 export function renderBorrowedBooks(){
@@ -74,9 +91,23 @@ export function renderBorrowedBooks(){
     const {bookId} = lib.dataset;
     lib.addEventListener("click", () => {
       renderBooksDetails(bookId);
-      apriDettagli();
     });
   });
+}
+
+export function displayBookList(/* borrowedBooks, */action_class,actionbtn_content){
+  renderWindow();
+  const book_list = document.querySelector('.js-book-list');
+  let booksHTML = "";
+  borrowedBooks.map((book) => {
+    booksHTML += `
+    <div class="book">
+      <p>Titolo: <b>${book.title}</b></p>
+      <p>Autore: ${book.author_name}</p>
+      <button class="js-${action_class}" data-book-id="${book.key}">${actionbtn_content}</button>
+    </div>`;
+  });
+  book_list.innerHTML = booksHTML;
 }
 
 export function renderBooksDetails(bookId){
@@ -99,5 +130,40 @@ export function renderBooksDetails(bookId){
       `;
     };
     renderWindow(booksDetailsHTML);
+  });
+}
+
+export function renderEditBookWin(bookId){
+  let HTML;
+  borrowedBooks.forEach((book) => {
+    if(book.key === bookId){
+      HTML = `
+        <h1>Modifica dettagli</h1>
+        <div class="edit-book-container">
+          <div class="edit-book-wrapper">
+            <div class="option">
+              <label for="title-camp">Title</label>
+              <input type="text" class="js-title-edit" value="${book.title}">
+            </div>
+            <div class="option">
+              <label for="authors-camp">Authors</label>
+              <input type="text" value="${book.author_name}" class="js-authors-edit">
+            </div>
+            <div class="option">
+              <label for="description-camp">Description</label>
+              <textarea rows="5" cols="33" class="desc-textarea js-description-edit">${book.description}</textarea>
+            </div>
+            <div class="submit-form">
+              <button class="submit-changes">Confirm the changes</button>
+            </div>
+            <div class="edited-changes">
+              <img src="img/icons/saved.png"> 
+              Changes have been saved
+            </div>
+          </div>
+        </div>
+      `;
+    };
+    renderWindow(HTML);
   });
 }

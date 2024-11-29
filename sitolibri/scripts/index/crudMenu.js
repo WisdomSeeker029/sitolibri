@@ -1,7 +1,7 @@
-import { returnBook,borrowBook } from "../../data/books.js";
-import {borrowedBooks, renderBorrowedBooks } from "../../data/books.js";
+import { returnBook,borrowBook,renderEditBookWin, renderBooksDetails} from "../../data/books.js";
+import {borrowedBooks, renderBorrowedBooks,displayBookList,updateBookDetails} from "../../data/books.js";
 import {searchBooks} from "./crudMenu/ricerche.js";
-import {renderWindow,displayBookList} from "../utils/finestra.js";
+import {renderWindow} from "../utils/finestra.js";
 
 export function renderCrudMenu(){
   let crudMenuHTML = '';
@@ -41,7 +41,17 @@ export function renderCrudMenu(){
 
   deleteBookButton.addEventListener('click', () => {
     renderDeleteBookPopup();
-    renderCrudMenu(); //rigenerare il crudMenu risolve il fatto che searchButton sia null prima che sia generata la finestra per aprire l'addBook 
+    // renderCrudMenu(); //rigenerare il crudMenu risolve il fatto che searchButton sia null prima che sia generata la finestra per aprire l'addBook 
+  });
+
+  editBookButton.addEventListener('click', () => {
+    renderEditDetails();
+    // renderCrudMenu();
+  });
+
+  viewBookButton.addEventListener('click', () => {
+    renderViewBookList();
+    // renderCrudMenu();
   });
 
   const searchButton = document.querySelector('.search-book-button');
@@ -101,8 +111,7 @@ function renderAddBook(){
 function renderDeleteBookPopup(){
   const action_class = 'delete-book-button';
   const actionbtn_content = 'Restituisci libro';
-  displayBookList(borrowedBooks,action_class,actionbtn_content);
-
+  displayBookList(/* borrowedBooks, */action_class,actionbtn_content);
 
   document.querySelectorAll('.js-delete-book-button').forEach((button) => {
     button.addEventListener('click', () => {
@@ -112,4 +121,56 @@ function renderDeleteBookPopup(){
       renderBorrowedBooks();
     })
   })
+}
+
+function renderEditDetails(){
+  const action_class = 'edit-details-button';
+  const actionbtn_content = 'Modifica info';
+  displayBookList(/* borrowedBooks, */action_class,actionbtn_content);
+
+  document.querySelectorAll('.js-edit-details-button').forEach((button) => {
+    button.addEventListener('click', ()=> {
+      const {bookId} = button.dataset;
+      renderEditBookWin(bookId);
+      const submit_edit_btn = document.querySelector('.submit-changes');
+      const edited_changes = document.querySelector('.edited-changes');
+      let edited_msg_id;
+      submit_edit_btn.addEventListener('click', ()=>{
+        borrowedBooks.forEach((book) => {
+          if(book.key === bookId){
+            const newBookDetails = {
+              title: document.querySelector('.js-title-edit').value || 'Sconosciuto',
+              author_name: document.querySelector('.js-authors-edit').value || 'Sconosciuto',
+              key: bookId,
+              description: document.querySelector('.js-description-edit').value || 'La descrizione non è disponibile'
+            };
+            updateBookDetails(bookId,newBookDetails);
+            renderBorrowedBooks();
+            if(!edited_changes.classList.contains('show')){
+              edited_changes.classList.add('show');
+            };
+          }
+          /*it let us know if another timeout is active. If the submit_edit_btn has been clicked by less than 2 seconds it remove the previous timeout and start another one. */
+          if(edited_msg_id){
+            clearTimeout(edited_msg_id);
+          }
+          edited_msg_id = setTimeout(()=>{
+            edited_changes.classList.remove('show')
+          },2000);
+        })
+      })
+    })
+  });
+}
+
+function renderViewBookList(){
+  const action_class = 'view-details-button';
+  const actionbtn_content = 'Vedi dettagli';
+  displayBookList(/* borrowedBooks, */action_class,actionbtn_content);
+  document.querySelectorAll('.js-view-details-button').forEach((button) => {
+    button.addEventListener('click',() => {
+      const {bookId} = button.dataset;
+      renderBooksDetails(bookId);
+    })
+  });
 }
