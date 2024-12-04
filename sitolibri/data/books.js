@@ -1,4 +1,4 @@
-import { getDescription } from "../scripts/index/crudMenu/ricerche.js";
+import { getCoverImg, getDescription } from "../scripts/index/crudMenu/ricerche.js";
 import { renderWindow } from "../scripts/utils/finestra.js";
 
 export let borrowedBooks = [];
@@ -25,11 +25,13 @@ export async function borrowBook(bookId,results){
       if (key == bookId) {
         console.log(key);
         const description = await getDescription(key);
+        const cover = await getCoverImg(key);
         borrowedBooks.push({
           title: book.title || 'Sconosciuto',
           author_name: book.author_name[0] || 'Sconosciuto',
           key, //non è il key dell'edizione
-          description: description || 'La descrizione non è disponibile'
+          description: description || 'La descrizione non è disponibile',
+          cover: cover || 'img/books/book.jpg'
         });
         saveToStorage();
     }
@@ -77,7 +79,7 @@ export function renderBorrowedBooks(){
     borrowedBooks.map((book) => {
       booksHTML += `
       <div class="libro" data-book-id="${book.key}">
-        <img width="100%" src="img/books/book.jpg" alt="libro">
+        <img width="100%" src="${book.cover || 'img/books/book.jpg'}" alt="libro">
         <h4>${book.title}</h4>
         <h5>${book.author_name}</h5>
       </div>
@@ -116,7 +118,7 @@ export function renderBooksDetails(bookId){
     if(book.key === bookId){
       booksDetailsHTML = `
       <div class="dettagli-img">
-        <img src="img/books/book.jpg" alt="">
+        <img src="${book.cover}" alt="">
       </div>
       <div>
         <p class="titolo">
@@ -155,10 +157,6 @@ export function renderEditBookWin(bookId){
             </div>
             <div class="submit-form">
               <button class="submit-changes">Confirm the changes</button>
-            </div>
-            <div class="edited-changes">
-              <img src="img/icons/saved.png"> 
-              Changes have been saved
             </div>
           </div>
         </div>

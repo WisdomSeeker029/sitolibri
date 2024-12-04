@@ -1,7 +1,7 @@
 import { returnBook,borrowBook,renderEditBookWin, renderBooksDetails} from "../../data/books.js";
 import {borrowedBooks, renderBorrowedBooks,displayBookList,updateBookDetails} from "../../data/books.js";
 import {searchBooks} from "./crudMenu/ricerche.js";
-import {renderWindow} from "../utils/finestra.js";
+import {renderWindow,setOperationResult} from "../utils/finestra.js";
 
 export function renderCrudMenu(){
   let crudMenuHTML = '';
@@ -67,6 +67,7 @@ export function renderCrudMenu(){
               const {bookId} = button.dataset;
               await borrowBook(bookId,results);
               renderBorrowedBooks();
+              setOperationResult('The book has been added');
             });
           })
       } catch (error) {
@@ -111,14 +112,16 @@ function renderAddBook(){
 function renderDeleteBookPopup(){
   const action_class = 'delete-book-button';
   const actionbtn_content = 'Restituisci libro';
-  displayBookList(/* borrowedBooks, */action_class,actionbtn_content);
+  displayBookList(action_class,actionbtn_content);
 
   document.querySelectorAll('.js-delete-book-button').forEach((button) => {
     button.addEventListener('click', () => {
       const {bookId} = button.dataset;
       console.log(bookId);
       returnBook(bookId);
+      setOperationResult('The book has been deleted');
       renderBorrowedBooks();
+      renderDeleteBookPopup();
     })
   })
 }
@@ -126,15 +129,13 @@ function renderDeleteBookPopup(){
 function renderEditDetails(){
   const action_class = 'edit-details-button';
   const actionbtn_content = 'Modifica info';
-  displayBookList(/* borrowedBooks, */action_class,actionbtn_content);
+  displayBookList(action_class,actionbtn_content);
 
   document.querySelectorAll('.js-edit-details-button').forEach((button) => {
     button.addEventListener('click', ()=> {
       const {bookId} = button.dataset;
       renderEditBookWin(bookId);
       const submit_edit_btn = document.querySelector('.submit-changes');
-      const edited_changes = document.querySelector('.edited-changes');
-      let edited_msg_id;
       submit_edit_btn.addEventListener('click', ()=>{
         borrowedBooks.forEach((book) => {
           if(book.key === bookId){
@@ -146,17 +147,8 @@ function renderEditDetails(){
             };
             updateBookDetails(bookId,newBookDetails);
             renderBorrowedBooks();
-            if(!edited_changes.classList.contains('show')){
-              edited_changes.classList.add('show');
-            };
+            setOperationResult('Changes have been saved');
           }
-          /*it let us know if another timeout is active. If the submit_edit_btn has been clicked by less than 2 seconds it remove the previous timeout and start another one. */
-          if(edited_msg_id){
-            clearTimeout(edited_msg_id);
-          }
-          edited_msg_id = setTimeout(()=>{
-            edited_changes.classList.remove('show')
-          },2000);
         })
       })
     })

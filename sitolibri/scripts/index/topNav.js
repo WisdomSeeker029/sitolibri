@@ -1,4 +1,4 @@
-const topNavItems = ['Libri','eBook','AudioLibri'];
+const topNavItems = ['Libri'/*,'eBook','AudioLibri'*/];
 
 export function renderTopNav(){
   let topNavHTML = '';
