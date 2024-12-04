@@ -4,8 +4,11 @@ export function renderWindow(content){
   if(!content){
     content = "";
   }
+  const dialog = document.querySelector("dialog");
   
   const finestra = document.querySelector('.crud-finestra');
+
+  const displayWindow = (show) => show ? dialog.show() : dialog.close();
 
   const finestraHTML = `
     <div class="chiudi">
@@ -17,26 +20,30 @@ export function renderWindow(content){
     <div class="operation-result"></div>
   `;
 
+  displayWindow(true);
+
   finestra.innerHTML = finestraHTML;
   
-  function displayWindow(){
-    finestra.classList.add('show');
+/*   function displayWindow(){
+    // finestra.classList.add('show');
+    
   }
 
   function closeWindow(){
-    finestra.classList.remove('show');
-  }
+    // finestra.classList.remove('show');
+    
+  } */
   
-  document.querySelector('.chiudi').addEventListener('click', () => closeWindow());
+  document.querySelector('.chiudi').addEventListener('click', () => displayWindow(false));
 
   function fillContent(content){
     document.querySelector('.window-content-wrapper').innerHTML = content;
   }
 
   fillContent(content);
-  if(!finestra.classList.contains('show')){
+  /* if(!finestra.classList.contains('show')){
     displayWindow();
-  }
+  } */
 }
 
 export function setOperationResult(message){
