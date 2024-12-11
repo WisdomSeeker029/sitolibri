@@ -34,7 +34,7 @@ export function renderCrudMenu(){
   const searchInput = document.querySelector('.search-input');
 
   addBookButton.addEventListener('click', () => {
-    document.querySelector('.crud-finestra').classList.add('show');
+    // document.querySelector('.crud-finestra').classList.add('show');
     renderAddBook();
     renderCrudMenu(); //rigenerare il crudMenu risolve il fatto che searchButton sia null prima che sia generata la finestra per aprire l'addBook
   });

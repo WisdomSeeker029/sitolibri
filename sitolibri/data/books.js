@@ -120,7 +120,7 @@ export function renderBooksDetails(bookId){
       <div class="dettagli-img">
         <img src="${book.cover}" alt="">
       </div>
-      <div>
+      <div class="book-details">
         <p class="titolo">
           ${book.title}
         </p>
