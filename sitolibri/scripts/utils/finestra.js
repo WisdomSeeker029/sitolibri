@@ -24,16 +24,6 @@ export function renderWindow(content){
 
   finestra.innerHTML = finestraHTML;
   
-/*   function displayWindow(){
-    // finestra.classList.add('show');
-    
-  }
-
-  function closeWindow(){
-    // finestra.classList.remove('show');
-    
-  } */
-  
   document.querySelector('.chiudi').addEventListener('click', () => displayWindow(false));
 
   function fillContent(content){
@@ -41,9 +31,6 @@ export function renderWindow(content){
   }
 
   fillContent(content);
-  /* if(!finestra.classList.contains('show')){
-    displayWindow();
-  } */
 }
 
 export function setOperationResult(message){

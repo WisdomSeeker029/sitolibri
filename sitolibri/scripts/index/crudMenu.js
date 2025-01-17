@@ -1,5 +1,5 @@
-import { returnBook,borrowBook,renderEditBookWin, renderBooksDetails} from "../../data/books.js";
-import {borrowedBooks, renderBorrowedBooks,displayBookList,updateBookDetails} from "../../data/books.js";
+import { returnBook,renderEditBookWin, renderBooksDetails} from "../../data/books.js";
+import {borrowedBooks, renderBorrowedBooks,displayBookList,updateBookDetails,displayEditionResults} from "../../data/books.js";
 import {searchBooks} from "./crudMenu/ricerche.js";
 import {renderWindow,setOperationResult} from "../utils/finestra.js";
 
@@ -30,13 +30,10 @@ export function renderCrudMenu(){
   const deleteBookButton = document.querySelector('.js-delete-book');
   const editBookButton = document.querySelector('.js-edit-book');
   const viewBookButton = document.querySelector('.js-view-book');
-  const resultsBox = document.querySelector('.js-book-list');
-  const searchInput = document.querySelector('.search-input');
 
   addBookButton.addEventListener('click', () => {
-    // document.querySelector('.crud-finestra').classList.add('show');
     renderAddBook();
-    renderCrudMenu(); //rigenerare il crudMenu risolve il fatto che searchButton sia null prima che sia generata la finestra per aprire l'addBook
+    //renderCrudMenu(); //rigenerare il crudMenu risolve il fatto che searchButton sia null prima che sia generata la finestra per aprire l'addBook
   });
 
   deleteBookButton.addEventListener('click', () => {
@@ -46,7 +43,6 @@ export function renderCrudMenu(){
 
   editBookButton.addEventListener('click', () => {
     renderEditDetails();
-    // renderCrudMenu();
   });
 
   viewBookButton.addEventListener('click', () => {
@@ -54,47 +50,6 @@ export function renderCrudMenu(){
     // renderCrudMenu();
   });
 
-  const searchButton = document.querySelector('.search-book-button');
-  searchButton.addEventListener('click', async () => {
-    const query = searchInput.value.trim();
-    if(query){
-      try {
-        const results = await searchBooks(query);
-        displayResults(results);
-        document.querySelectorAll('.js-add-book-button')
-          .forEach((button) => {
-            button.addEventListener('click', async () => {
-              const {bookId} = button.dataset;
-              await borrowBook(bookId,results);
-              renderBorrowedBooks();
-              setOperationResult('The book has been added');
-            });
-          })
-      } catch (error) {
-        console.error('Errore durante la ricerca:', error);
-        resultsBox.innerHTML = '<p>Si è verificato un errore durante la ricerca.</p>';
-      }
-    }
-  });
-
-
-//funzione per visualizzare i risultati
-  function displayResults(books) {
-    if(books.length === 0){
-      resultsBox.innerHTML = '<p>Nessun risultato trovato</p>';
-      return;
-    }
-
-    const booksHTML = books.map(book =>
-      `<div class="book">
-        <h3>${book.title}</h3>
-        <p>Autore: ${book.author_name ? book.author_name.join(', ') : 'Sconosciuto'}</p>
-        <p>Anno di pubblicazione: ${book.first_publish_year || 'Sconosciuto'}</p>
-        <button class="js-add-book-button" data-book-id="${book.edition_key[0]}">Aggiungi libro</button>
-      </div>
-      `).join('');
-    resultsBox.innerHTML = booksHTML;
-  }
 }
 
 function renderAddBook(){
@@ -107,62 +62,109 @@ function renderAddBook(){
     </div>
   `;
   renderWindow(contentHTML);
+  const resultsBox = document.querySelector('.js-book-list');
+  const searchInput = document.querySelector('.search-input');
+  const searchButton = document.querySelector('.search-book-button');
+
+  searchButton.addEventListener('click', async () => {
+    const query = searchInput.value.trim();
+    if(query){
+      try {
+        const results = await searchBooks(query);
+        displayBookResults(results.slice(0,10)); //mostra solo i primi 10
+      } catch (error) {
+        console.error('Errore durante la ricerca:', error);
+        resultsBox.innerHTML = '<p>Si è verificato un errore durante la ricerca.</p>';
+      }
+    }
+  });
+
+  //funzione per visualizzare i risultati
+  async function displayBookResults(results) {
+    if(results.length === 0){
+      resultsBox.innerHTML = '<p>Nessun risultato trovato</p>';
+      return;
+    }
+
+    let booksHTML = '';
+    for (const book of results) {
+      const img = book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg?default=false` : 'img/books/book.jpg'; //non è necessario fare il fetch perchè è solo un immagine
+      booksHTML += `
+      <div class="book-item">
+        <img src="${img /* || 'img/books/book.jpg' */}">
+        <div class="book-info">
+          <h3>${book.title}</h3>
+          <p>Autore: ${book.author_name ? book.author_name.slice(0, 5).join(', ') : 'Sconosciuto'}</p>
+          <p>Anno di pubblicazione: ${book.first_publish_year || 'Sconosciuto'}</p>
+          <button class="js-view-editions-button" data-work-ref="${/*book.edition_key[0]*/ book.key}">Vedi edizioni</button>
+        </div>
+      </div>`;
+    }
+    resultsBox.innerHTML = booksHTML;
+    document.querySelectorAll('.js-view-editions-button').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const {workRef} = button.dataset;
+        await displayEditionResults(workRef);
+      });
+    })
+  }
 }
 
-function renderDeleteBookPopup(){
+async function renderDeleteBookPopup(){
   const action_class = 'delete-book-button';
   const actionbtn_content = 'Restituisci libro';
-  displayBookList(action_class,actionbtn_content);
+  await displayBookList(action_class,actionbtn_content);
 
   document.querySelectorAll('.js-delete-book-button').forEach((button) => {
-    button.addEventListener('click', () => {
+    button.addEventListener('click', async () => {
       const {bookId} = button.dataset;
       console.log(bookId);
       returnBook(bookId);
+      await renderBorrowedBooks();
+      await renderDeleteBookPopup();
       setOperationResult('The book has been deleted');
-      renderBorrowedBooks();
-      renderDeleteBookPopup();
     })
   })
 }
 
-function renderEditDetails(){
+async function renderEditDetails(){
   const action_class = 'edit-details-button';
   const actionbtn_content = 'Modifica info';
-  displayBookList(action_class,actionbtn_content);
+  await displayBookList(action_class,actionbtn_content);
 
   document.querySelectorAll('.js-edit-details-button').forEach((button) => {
     button.addEventListener('click', ()=> {
       const {bookId} = button.dataset;
       renderEditBookWin(bookId);
-      const submit_edit_btn = document.querySelector('.submit-changes');
-      submit_edit_btn.addEventListener('click', ()=>{
-        borrowedBooks.forEach((book) => {
-          if(book.key === bookId){
-            const newBookDetails = {
-              title: document.querySelector('.js-title-edit').value || 'Sconosciuto',
-              author_name: document.querySelector('.js-authors-edit').value || 'Sconosciuto',
-              key: bookId,
-              description: document.querySelector('.js-description-edit').value || 'La descrizione non è disponibile'
-            };
-            updateBookDetails(bookId,newBookDetails);
-            renderBorrowedBooks();
-            setOperationResult('Changes have been saved');
-          }
-        })
+      const submit_edit_btn = document.querySelector('.js-submit-changes');
+      submit_edit_btn.addEventListener('click', () => {
+        let editedDetails = {
+          title: document.querySelector('.js-title-edit').value,
+          author_name: document.querySelector('.js-authors-edit').value,
+          publish_date: document.querySelector('.js-publdate-edit').value,
+          publishers: document.querySelector('.js-publs-edit').value,
+          languages: document.querySelector('.js-langs-edit').value,
+          library: document.querySelector('.js-library-edit').value,
+          subjects: document.querySelector('.js-subjects-edit').value,
+          description: document.querySelector('.js-description-edit').value
+        }; //it does not contain all the properties of the book object, only the editable ones
+        updateBookDetails(bookId,editedDetails);
+        renderBorrowedBooks();
+        setOperationResult('Changes have been saved');
       })
     })
-  });
+  })
 }
 
-function renderViewBookList(){
+async function renderViewBookList(){
   const action_class = 'view-details-button';
   const actionbtn_content = 'Vedi dettagli';
-  displayBookList(/* borrowedBooks, */action_class,actionbtn_content);
+  await displayBookList(action_class,actionbtn_content);
   document.querySelectorAll('.js-view-details-button').forEach((button) => {
     button.addEventListener('click',() => {
       const {bookId} = button.dataset;
+      console.log(bookId);
       renderBooksDetails(bookId);
-    })
+    });
   });
 }

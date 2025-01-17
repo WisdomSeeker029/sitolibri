@@ -62,21 +62,23 @@ body{
 }
 
 dialog{
+  position: fixed;
   border-style: none;
   background-color: rgb(251, 235, 206);
   border-radius: 6px;
-  left: 50%;
+  margin: 0;
   top: 50%;
-  transform: translate(-50%, -50%);
+  left: 50%;
+  transform: translate(-50%,-50%); 
   padding: 0%;
   max-height: 70%;
-  overflow-x: hidden;
+  width: 400px;
+  overflow: hidden;
 }
 
 .crud-finestra{
   display: flex;
   flex-direction: column;
-  flex-basis: 100px;
   opacity: 1;
   width: auto;
   height: auto;
@@ -90,10 +92,32 @@ dialog{
 .book-results{
   background-color: white;
   /* max-height: auto; */
-  max-height: 200px;
+  max-height: 20rem;
   width: auto;
   overflow-x: scroll;
 }
+
+.book-item{
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  gap: 0.5rem;
+  max-height: 12.25rem;
+  overflow: scroll;
+  align-items: start;
+}
+
+/* .book-info{
+  overfl
+} */
+
+.book-info > * {
+  margin: 0;
+}
+
+.book-item > img {
+  width: 5rem;
+} 
 
 .books-on-loan-list{
   background-color: white;
@@ -123,6 +147,7 @@ dialog{
 
 .libro{
   cursor: pointer;
+  border-radius: 10px;
 }
 
 .book-details .descrizione{
@@ -136,10 +161,6 @@ dialog{
   top: 0;
   right: 0;
   cursor: pointer;
-}
-
-.dettagli-img {
-  /* max-width: 15rem; */
 }
 
 .dettagli-img > img{
@@ -186,6 +207,6 @@ dialog{
   justify-content: center;
 }
 
-@media (max-width: 18rem) {
+/* @media (max-width: 18rem) {
   .window-content-wrapper { flex-wrap: wrap; }
-}
+} */
