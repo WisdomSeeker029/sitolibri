@@ -30,7 +30,7 @@ export function renderCrudMenu(){
   const deleteBookButton = document.querySelector('.js-delete-book');
   const editBookButton = document.querySelector('.js-edit-book');
   const viewBookButton = document.querySelector('.js-view-book');
-
+  
   addBookButton.addEventListener('click', () => {
     renderAddBook();
     //renderCrudMenu(); //rigenerare il crudMenu risolve il fatto che searchButton sia null prima che sia generata la finestra per aprire l'addBook

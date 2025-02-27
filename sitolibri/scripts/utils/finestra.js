@@ -5,8 +5,6 @@ export function renderWindow(content){
     content = "";
   }
   const dialog = document.querySelector("dialog");
-  
-  const finestra = document.querySelector('.crud-finestra');
 
   const displayWindow = (show) => show ? dialog.show() : dialog.close();
 
@@ -22,7 +20,7 @@ export function renderWindow(content){
 
   displayWindow(true);
 
-  finestra.innerHTML = finestraHTML;
+  dialog.innerHTML = finestraHTML;
   
   document.querySelector('.chiudi').addEventListener('click', () => displayWindow(false));
 

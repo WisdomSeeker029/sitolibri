@@ -49,17 +49,40 @@ body{
 .icon-crud img{
   width: 30px;
   vertical-align: middle;
-}
-
-.icon-crud p{
-  display: inline-block;
-  margin: 0px;
   padding: 10px 0px;
 }
 
-.icon-crud:hover{
+.icon-crud p{
+  /*display: inline-block;*/
+  display: none; /* At start, the descriptions of the option should not be visible for narrower screens*/
+  margin: 0px;
+}
+
+/*REMINDER: hover effects does not work on mobile devices. */
+.icon-crud:active p{ /*In this way while I am activating the button it will become visible the p will become visible */
+  display: inline-block;
+}
+  
+.icon-crud:active{
   background-color: rgba(255, 246, 174, 0.537);
 }
+
+
+@media screen and (min-width: 40em){
+  .icon-crud p{
+    display: inline-block;
+  }
+
+  .icon-crud:hover p{ /*In this way if i hover on the span the p will be visible */
+    display: inline-block;
+  }
+
+  .icon-crud:hover{
+    background-color: rgba(255, 246, 174, 0.537);
+  }
+}
+
+
 
 dialog{
   position: fixed;
@@ -70,18 +93,15 @@ dialog{
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%); 
-  padding: 0%;
+  padding: 10px;
   max-height: 70%;
-  width: 400px;
-  overflow: hidden;
+  width: max(400px,70%);
+  overflow: auto;
 }
 
 .crud-finestra{
   display: flex;
   flex-direction: column;
-  opacity: 1;
-  width: auto;
-  height: auto;
   padding: 10px;
 }
 
@@ -91,7 +111,6 @@ dialog{
 
 .book-results{
   background-color: white;
-  /* max-height: auto; */
   max-height: 20rem;
   width: auto;
   overflow-x: scroll;
@@ -129,7 +148,7 @@ dialog{
 
 .spazio-libri{
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+  grid-template-columns: repeat(auto-fit, 200px);
   text-align: center;
   justify-content: center; /*put the column at the center of the grid*/
   gap: 1rem;
@@ -141,31 +160,35 @@ dialog{
 }
 
 .libro > img {
-  width: 200px;
+  width: 100%;
   object-fit: cover;
 }
 
 .libro{
   cursor: pointer;
-  border-radius: 10px;
-}
-
-.book-details .descrizione{
-  max-width: 40ch;
-  /* overflow: hidden; */
-  word-wrap: break-word;
+  max-width: 200px;
 }
 
 .chiudi{
-  position: absolute;
+  position: fixed;
   top: 0;
   right: 0;
   cursor: pointer;
 }
 
-.dettagli-img > img{
-  width: 15rem;
+.dettagli-img{
+  flex: 1;
+  /* align-self: center; */
+  max-width: 50%;
+}
 
+.dettagli-img img{
+  width: max(180px,100%);/* 180px is the size of the img that get fetched and is at M(Medium) size. If the width gets narrower than 180px it cause pixelation*/
+  position: sticky;
+  top: 30px;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .edit-book-wrapper{
@@ -205,8 +228,27 @@ dialog{
   display: flex;
   column-gap: 1rem;
   justify-content: center;
+  max-width: 100%;
 }
 
-/* @media (max-width: 18rem) {
-  .window-content-wrapper { flex-wrap: wrap; }
-} */
+.book-details-container{
+  /* Use CSS Grid for the two-column layout */
+  display: flex;
+  gap: 1.7rem;
+  flex-wrap: wrap;
+}
+
+.book-details{
+  flex: 2;
+  /* min-width: min-content; */
+}
+
+@media screen and (max-width: 768px) { /*in this way in smaller devices it will still be readable*/
+  .book-details-container {
+    flex-direction: column;
+  }
+  
+  .dettagli-img, .book-details {
+    width: 100%;
+  }
+}

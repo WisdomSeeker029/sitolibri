@@ -134,7 +134,7 @@ export async function renderBorrowedBooks(){
       booksHTML = await Promise.all(
         borrowedBooks.map(async (book) => {
           return `<div class="libro" data-book-id="${book.key}">
-            <img width="100%" src="${book?.covers?.[0] ? 'https://covers.openlibrary.org/b/id/'+book?.covers?.[0]+'-M.jpg' : 'img/books/book.jpg'}" alt="libro">
+            <img src="${book?.covers?.[0] ? 'https://covers.openlibrary.org/b/id/'+book?.covers?.[0]+'-M.jpg' : 'img/books/book.jpg'}" alt="libro">
             <h4>${book?.title || 'Titolo non disponibile'}</h4>
             <h5>${book.author_name ? book.author_name : (book.author_from_work ? book.author_from_work : 'Autore non conosciuto')}</h5>
             <h6>${book?.publishers?.[0] || 'Editore non disponibile'}</h6>
@@ -162,9 +162,6 @@ export async function renderBorrowedBooks(){
 export async function displayBookList(action_class,actionbtn_content){
   let booksHTML = await Promise.all(
     borrowedBooks.map(async (book) => {
-      /* const work = await fetchWork(book?.works?.[0]?.key);
-      console.log(work.authors?.[0]?.author?.key);
-      const author = await getAuthors(work?.authors?.[0]?.author?.key); */
       return `
       <div class="book">
         <p>Titolo: <b>${book.title}</b></p>
@@ -184,22 +181,24 @@ export function renderBooksDetails(bookId){
   borrowedBooks.forEach((book) => {
     if(book.key === bookId){
       booksDetailsHTML = `
-      <div class="dettagli-img">
-        <img src="${book?.covers?.[0] ? 'https://covers.openlibrary.org/b/id/'+book?.covers?.[0]+'-M.jpg' : 'img/books/book.jpg'}" alt="">
-      </div>
-      <div class="book-details">
-        <p>
-          ${book.title}
-        </p>
-        <p>${book.author_name || book.author_from_work}</p>
-        <p>${book.publish_date}</p>
-        <p>${book.publishers[0] || 'Unknown publishers'}</p>
-        <p>${book.languages}</p>
-        <p>${book.library}</p>
-        <p>${book.subjects.join(', ')}</p>
-        <p class="descrizione">
-          ${book.description || 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam blanditiis sint odio natus possimus consequuntur quasi quod soluta voluptates minus quos non, enim mollitia asperiores deserunt, inventore sequi rem commodi.'}
-        </p>
+      <div class="book-details-container">
+        <div class="dettagli-img">
+          <img src="${book?.covers?.[0] ? 'https://covers.openlibrary.org/b/id/'+book?.covers?.[0]+'-M.jpg' : 'img/books/book.jpg'}" alt="">
+        </div>
+        <div class="book-details">
+          <p>
+            ${book.title}
+          </p>
+          <p>${book.author_name || book.author_from_work}</p>
+          <p>${book.publish_date}</p>
+          <p>${book.publishers?.[0] || 'Unknown publishers'}</p>
+          <p>${book.languages}</p>
+          <p>${book.library}</p>
+          <p>${book.subjects?.join(', ')}</p>
+          <p class="descrizione">
+            ${book.description || 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam blanditiis sint odio natus possimus consequuntur quasi quod soluta voluptates minus quos non, enim mollitia asperiores deserunt, inventore sequi rem commodi.'}
+          </p>
+        </div>
       </div>
       `;
     };
