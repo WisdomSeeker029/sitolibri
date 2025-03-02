@@ -7,8 +7,8 @@
 body{
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  padding-top: 47px;
-  padding-left: 10px;
+  padding-top: 3em; /* 47px; */
+  padding-left: .625em; /* 10px; */
 }
 
 .topnav{
@@ -24,7 +24,7 @@ body{
 .topnav > *{
   color: wheat;
   text-decoration: none;
-  padding: 14px 12px;
+  padding: 0.875em 0.75em; /*14px 12px;*/
 }
 
 .topnav a{
@@ -47,15 +47,15 @@ body{
   cursor: pointer;
 }
 .icon-crud img{
-  width: 30px;
+  width: 1.875rem; /* 30px */
   vertical-align: middle;
-  padding: 10px 0px;
+  padding: 0.625em 0; /* 10px 0px;  */
 }
 
 .icon-crud p{
   /*display: inline-block;*/
   display: none; /* At start, the descriptions of the option should not be visible for narrower screens*/
-  margin: 0px;
+  margin: 0em;
 }
 
 /*REMINDER: hover effects does not work on mobile devices. */
@@ -68,7 +68,7 @@ body{
 }
 
 
-@media screen and (min-width: 40em){
+@media screen and (min-width: 40rem){
   .icon-crud p{
     display: inline-block;
   }
@@ -93,34 +93,36 @@ dialog{
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%); 
-  padding: 10px;
+  padding: 0.625em; /*10px;*/
   max-height: 70%;
-  width: max(400px,70%);
+  width: min(25em,100%); /* 400px */;
   overflow: auto;
 }
 
 .crud-finestra{
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  padding: 0.625em; /*10px; */
 }
 
 .search-input{
-  max-width: 250px;
+  max-width: 15.6rem; /* 250px; */
 }
 
 .book-results{
   background-color: white;
-  max-height: 20rem;
+  max-height: 20rem; 
   width: auto;
   overflow-x: scroll;
-}
+  padding:0 0.5rem;
 
+}
+book-res
 .book-item{
   display: flex;
   align-items: center;
-  padding: 10px;
-  gap: 0.5rem;
+  padding: 0.625em; /* 10px; */
+  gap: 0.5em;
   max-height: 12.25rem;
   overflow: scroll;
   align-items: start;
@@ -141,14 +143,14 @@ dialog{
 .books-on-loan-list{
   background-color: white;
   /* max-height: auto; */
-  max-height: 200px;
+  max-height: 12.5rem; /* 200px; */
   width: auto;
   overflow-x: scroll;
 }
 
 .spazio-libri{
   display: grid;
-  grid-template-columns: repeat(auto-fit, 200px);
+  grid-template-columns: repeat(auto-fit, 12.5rem); /* repeat(auto-fit, 200px); */
   text-align: center;
   justify-content: center; /*put the column at the center of the grid*/
   gap: 1rem;
@@ -166,7 +168,7 @@ dialog{
 
 .libro{
   cursor: pointer;
-  max-width: 200px;
+  max-width: 12.5rem; /* 200px; */
 }
 
 .chiudi{
@@ -178,7 +180,7 @@ dialog{
 
 .dettagli-img{
   flex: 1;
-  /* align-self: center; */
+  align-self: center;
   max-width: 50%;
 }
 
@@ -189,6 +191,10 @@ dialog{
   object-fit: cover;
   border-radius: 4px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dettagli-img, .book-details {
+  width: 100%;
 }
 
 .edit-book-wrapper{
@@ -216,8 +222,8 @@ dialog{
 }
 
 .operation-result img{
-  height: 18px;
-  margin-right: 5px;
+  height: 1.125rem; /* 18px; */
+  margin-right: 0.3rem; /*5px;*/
 }
 
 .show{
@@ -231,24 +237,24 @@ dialog{
   max-width: 100%;
 }
 
+.book-details{
+  flex: 2;
+}
+
 .book-details-container{
   /* Use CSS Grid for the two-column layout */
   display: flex;
+  flex-direction: column;
   gap: 1.7rem;
   flex-wrap: wrap;
 }
 
-.book-details{
-  flex: 2;
-  /* min-width: min-content; */
-}
-
-@media screen and (max-width: 768px) { /*in this way in smaller devices it will still be readable*/
+@media screen and (min-width: 48rem) { /*(min-width: 768px) in this way in smaller devices it will still be readable*/
   .book-details-container {
-    flex-direction: column;
+    flex-direction: row;
   }
-  
-  .dettagli-img, .book-details {
-    width: 100%;
+
+  dialog{
+    width: max(25rem,70%); /* max(400px,70%); */
   }
 }
