@@ -183,7 +183,7 @@ export function renderBooksDetails(bookId){
       booksDetailsHTML = `
       <div class="book-details-container">
         <div class="dettagli-img">
-          <img src="${book?.covers?.[0] ? 'https://covers.openlibrary.org/b/id/'+book?.covers?.[0]+'-M.jpg' : 'img/books/book.jpg'}" alt="">
+          <img src="${book?.covers?.[0] ? 'https://covers.openlibrary.org/b/id/'+book?.covers?.[0]+'-L.jpg' : 'img/books/book.jpg'}" alt="">
         </div>
         <div class="book-details">
           <p>

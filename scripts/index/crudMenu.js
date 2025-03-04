@@ -6,22 +6,22 @@ import {renderWindow,setOperationResult} from "../utils/finestra.js";
 export function renderCrudMenu(){
   let crudMenuHTML = '';
   crudMenuHTML += `
-    <span class="icon-crud add js-add-book">
+    <button class="icon-crud add js-add-book">
       <img src="img/icons/library_add.png" alt="Aggiungi">
       <p>Aggiungi libro</p>
-    </span>
-    <span class="icon-crud delete js-delete-book">
+    </button>
+    <button class="icon-crud delete js-delete-book">
       <img src="img/icons/library_delete.png" alt="Elimina">
       <p>Elimina libro</p>
-    </span>
-    <span class="icon-crud edit js-edit-book">
+    </button>
+    <button class="icon-crud edit js-edit-book">
       <img src="img/icons/edit.png" alt="Modifica">
       <p>Modifica dettagli</p>
-    </span>
-    <span class="icon-crud view js-view-book">
+    </button>
+    <button class="icon-crud view js-view-book">
       <img src="img/icons/fullscreen.png" alt="Visualizza">
       <p>Visualizza ulteriori dettagli</p>
-    </span>
+    </button>
   `;
   document.querySelector('.crud-bar').innerHTML = crudMenuHTML;
   

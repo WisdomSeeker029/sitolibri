@@ -31,7 +31,7 @@ body{
   transition: color 300ms,background-color 300ms;
 }
 
-.topnav a:hover {
+.topnav a:hover , .topnav a:active{
   background-color: wheat;
   color: #a52a2a;
 }
@@ -45,6 +45,8 @@ body{
 .icon-crud{
   border-radius: 8px;
   cursor: pointer;
+  border: none;
+  background: transparent;
 }
 .icon-crud img{
   width: 1.875rem; /* 30px */
@@ -56,14 +58,15 @@ body{
   /*display: inline-block;*/
   display: none; /* At start, the descriptions of the option should not be visible for narrower screens*/
   margin: 0em;
+  font-size: 1rem;
 }
 
 /*REMINDER: hover effects does not work on mobile devices. */
-.icon-crud:active p{ /*In this way while I am activating the button it will become visible the p will become visible */
+.icon-crud:active p, .icon-crud:hover p{ /*In this way while I am activating the button it will become visible the p will become visible */
   display: inline-block;
 }
   
-.icon-crud:active{
+.icon-crud:active, .icon-crud:hover{
   background-color: rgba(255, 246, 174, 0.537);
 }
 
@@ -71,14 +74,6 @@ body{
 @media screen and (min-width: 40rem){
   .icon-crud p{
     display: inline-block;
-  }
-
-  .icon-crud:hover p{ /*In this way if i hover on the span the p will be visible */
-    display: inline-block;
-  }
-
-  .icon-crud:hover{
-    background-color: rgba(255, 246, 174, 0.537);
   }
 }
 
@@ -180,12 +175,14 @@ book-res
 
 .dettagli-img{
   flex: 1;
-  align-self: center;
-  max-width: 50%;
+  align-self: start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .dettagli-img img{
-  width: max(180px,100%);/* 180px is the size of the img that get fetched and is at M(Medium) size. If the width gets narrower than 180px it cause pixelation*/
+  width: min(300px,100%); /*300px is the size of the img that get fetched and is at L(Large) size. If the width gets wider than 300px it cause pixelation */
   position: sticky;
   top: 30px;
   object-fit: cover;
