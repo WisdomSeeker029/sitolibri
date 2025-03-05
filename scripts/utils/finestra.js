@@ -1,4 +1,3 @@
-import { borrowedBooks } from "../../data/books.js";
 export function renderWindow(content){
 
   if(!content){

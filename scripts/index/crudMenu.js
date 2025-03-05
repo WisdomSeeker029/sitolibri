@@ -1,5 +1,5 @@
 import { returnBook,renderEditBookWin, renderBooksDetails} from "../../data/books.js";
-import {borrowedBooks, renderBorrowedBooks,displayBookList,updateBookDetails,displayEditionResults} from "../../data/books.js";
+import {renderBorrowedBooks,displayBookList,updateBookDetails,displayEditionResults} from "../../data/books.js";
 import {searchBooks} from "./crudMenu/ricerche.js";
 import {renderWindow,setOperationResult} from "../utils/finestra.js";
 
@@ -96,7 +96,7 @@ function renderAddBook(){
           <h3>${book.title}</h3>
           <p>Autore: ${book.author_name ? book.author_name.slice(0, 5).join(', ') : 'Sconosciuto'}</p>
           <p>Anno di pubblicazione: ${book.first_publish_year || 'Sconosciuto'}</p>
-          <button class="js-view-editions-button" data-work-ref="${/*book.edition_key[0]*/ book.key}">Vedi edizioni</button>
+          <button class="js-view-editions-button" data-work-ref="${book.key}">Vedi edizioni</button>
         </div>
       </div>`;
     }

@@ -1,5 +1,6 @@
 import {fetchWork, fetchLanguage, getAuthors, getCoverImg} from "../scripts/index/crudMenu/ricerche.js";
 import { renderWindow,setOperationResult } from "../scripts/utils/finestra.js";
+import { formatDate } from "../scripts/utils/other-utils.js";
 
 export let borrowedBooks = [];
 
@@ -80,10 +81,64 @@ export async function displayEditionResults(work) {
         const response = await fetch(`https://openlibrary.org${bookId}.json`);
         if (!response.ok) throw new Error('Network response failed');
         const data = await response.json();
-        console.log(data);
-        await borrowBook(data);
-        await renderBorrowedBooks();
-        setOperationResult('The book has been added');
+
+        const borrowFormHTML = `
+          <div class="borrow-form-container">
+            <h1>Dettagli Prestito</h1>
+            <form class="borrow-form">
+              <div>
+                <label for="library">Biblioteca:</label>
+                <input type="text" id="library" name="library">
+              </div>
+              <div>
+                <label for="borrow-date">Data Prestito:</label>
+                <input type="date" id="borrow-date" name="borrow-date">
+              </div>
+              <div>
+                <label for="return-date">Data Restituzione:</label>
+                <select id="return-date" name="return-date">
+                  <option value="7">1 settimana</option>
+                  <option value="14">2 settimane</option>
+                  <option value="21">3 settimane</option>
+                  <option value="30">1 mese</option>
+                </select>
+              </div>
+              <button type="submit" class="js-confirm-borrow">Conferma Prestito</button>
+            </form>
+          </div>
+        `;
+
+        renderWindow(borrowFormHTML);
+
+        document.querySelector('.borrow-form').addEventListener('submit', async (event) => {
+          event.preventDefault();
+          const library = document.getElementById('library').value.trim();
+          const borrowDate = document.getElementById('borrow-date').value;
+          const returnDays = document.getElementById('return-date').value;
+
+          if (!library || !borrowDate || !returnDays) {
+            setOperationResult('Compila tutti i campi obbligatori', 'error');
+            return;
+          }
+
+          const returnDate = new Date(borrowDate);
+          returnDate.setDate(returnDate.getDate() + parseInt(returnDays));
+
+          data.library = library;
+          data.borrowDate = borrowDate;
+          data.returnDate = returnDate.toISOString().split('T')[0]; //split('T')[0] in this way it only gets the date
+
+          try {
+            await borrowBook(data);
+            await renderBorrowedBooks();
+            setOperationResult('The book has been added');
+            setTimeout(() => {
+              document.querySelector('dialog').close();
+            }, 500);
+          } catch (error) {
+            setOperationResult(`Errore: ${error.message}`, 'error');
+          }
+        });
       });
     })
   } catch (error) {
@@ -186,17 +241,17 @@ export function renderBooksDetails(bookId){
           <img src="${book?.covers?.[0] ? 'https://covers.openlibrary.org/b/id/'+book?.covers?.[0]+'-L.jpg' : 'img/books/book.jpg'}" alt="">
         </div>
         <div class="book-details">
-          <p>
-            ${book.title}
-          </p>
-          <p>${book.author_name || book.author_from_work}</p>
-          <p>${book.publish_date}</p>
-          <p>${book.publishers?.[0] || 'Unknown publishers'}</p>
-          <p>${book.languages}</p>
-          <p>${book.library}</p>
-          <p>${book.subjects?.join(', ')}</p>
-          <p class="descrizione">
-            ${book.description || 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam blanditiis sint odio natus possimus consequuntur quasi quod soluta voluptates minus quos non, enim mollitia asperiores deserunt, inventore sequi rem commodi.'}
+          <p class="detail-title">Titolo: <strong>${book.title}</strong></p>
+          <p class="detail-item">Autore: ${book.author_name || book.author_from_work || 'Non specificato'}</p>
+          <p class="detail-item">Anno pubblicazione: ${book.publish_date || 'Non disponibile'}</p>
+          <p class="detail-item">Editore: ${book.publishers?.[0] || 'Non specificato'}</p>
+          <p class="detail-item">Lingua: ${book.languages || 'Non specificata'}</p>
+          <p class="detail-item">Biblioteca: ${book.library || 'Non specificata'}</p>
+          <p class="detail-item">Data prestito: ${book.borrowDate ? formatDate(book.borrowDate) : 'Non registrata'}</p>
+          <p class="detail-item">Data restituzione: ${book.returnDate ? formatDate(book.returnDate) : 'Non registrata'}</p>
+          <p class="detail-item">Argomenti: ${book.subjects?.join(', ') || 'Nessun argomento registrato'}</p>
+          <p class="descrizione detail-item">
+            Descrizione: ${book.description || 'Nessuna descrizione disponibile'}
           </p>
         </div>
       </div>
@@ -237,6 +292,14 @@ export function renderEditBookWin(bookId){
             <div>
               <label>Library</label>
               <input type="text" class="js-library-edit" value="${book.library ? book.library : 'Unknown library' }">
+            </div>
+            <div>
+              <label>Data Prestito</label>
+              <input type="date" class="js-borrowdate-edit" value="${book.borrowDate || ''}">
+            </div>
+            <div>
+              <label>Data Restituzione</label>
+              <input type="date" class="js-returndate-edit" value="${book.returnDate || ''}">
             </div>
             <div>
               <label>Subjects</label>
