@@ -7,24 +7,40 @@
 body{
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  padding-top: 3em; /* 47px; */
+  padding-top: 3.5em;
   padding-left: .625em; /* 10px; */
 }
 
-.topnav{
+.playwrite {
+  font-family: "Playwrite IT Moderna", cursive;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.title-space{
   display: flex;
-  background-color: brown;
   position: fixed;
+  justify-content: center;
   top: 0;
   right: 0;
   left: 0;
   z-index: 200;
 }
 
+.title-space > *{
+  color: wheat;
+  margin: 0;
+  /* text-decoration: none; */
+  /* padding: 0.875em 0.75em; */
+}
+
+/*
+
 .topnav > *{
   color: wheat;
   text-decoration: none;
-  padding: 0.875em 0.75em; /*14px 12px;*/
+  padding: 0.875em 0.75em; //14px 12px;
 }
 
 .topnav a{
@@ -35,6 +51,7 @@ body{
   background-color: wheat;
   color: #a52a2a;
 }
+*/
 
 /*Ciò che segue è il css per i comandi CRUD*/
 

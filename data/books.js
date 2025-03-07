@@ -91,7 +91,7 @@ export async function displayEditionResults(work) {
                 <input type="text" id="library" name="library">
               </div>
               <div>
-                <label for="borrow-date">Data Prestito:</label>
+                <label for="borrow-date">Borrow date</label>
                 <input type="date" id="borrow-date" name="borrow-date">
               </div>
               <div>
@@ -117,7 +117,7 @@ export async function displayEditionResults(work) {
           const returnDays = document.getElementById('return-date').value;
 
           if (!library || !borrowDate || !returnDays) {
-            setOperationResult('Compila tutti i campi obbligatori', 'error');
+            setOperationResult('Fill in the fields');
             return;
           }
 
@@ -132,11 +132,12 @@ export async function displayEditionResults(work) {
             await borrowBook(data);
             await renderBorrowedBooks();
             setOperationResult('The book has been added');
+            document.querySelector('.window-content-wrapper').innerHTML = '';
             setTimeout(() => {
               document.querySelector('dialog').close();
-            }, 500);
+            }, 2000);
           } catch (error) {
-            setOperationResult(`Errore: ${error.message}`, 'error');
+            setOperationResult(`Error: ${error.message}`);
           }
         });
       });
@@ -174,6 +175,8 @@ export function updateBookDetails(bookId,editedDetails){
       book.publishers[0] = editedDetails.publishers;
       book.languages = editedDetails.languages.split(','); //converts the string into an array
       book.library = editedDetails.library;
+      book.borrowDate = editedDetails.borrowDate;
+      book.returnDate = editedDetails.returnDate;
       book.subjects = editedDetails.subjects.split(',');
       book.description = editedDetails.description;
     }
@@ -242,16 +245,16 @@ export function renderBooksDetails(bookId){
         </div>
         <div class="book-details">
           <p class="detail-title">Titolo: <strong>${book.title}</strong></p>
-          <p class="detail-item">Autore: ${book.author_name || book.author_from_work || 'Non specificato'}</p>
-          <p class="detail-item">Anno pubblicazione: ${book.publish_date || 'Non disponibile'}</p>
-          <p class="detail-item">Editore: ${book.publishers?.[0] || 'Non specificato'}</p>
-          <p class="detail-item">Lingua: ${book.languages || 'Non specificata'}</p>
-          <p class="detail-item">Biblioteca: ${book.library || 'Non specificata'}</p>
-          <p class="detail-item">Data prestito: ${book.borrowDate ? formatDate(book.borrowDate) : 'Non registrata'}</p>
-          <p class="detail-item">Data restituzione: ${book.returnDate ? formatDate(book.returnDate) : 'Non registrata'}</p>
-          <p class="detail-item">Argomenti: ${book.subjects?.join(', ') || 'Nessun argomento registrato'}</p>
+          <p class="detail-item">Author: ${book.author_name || book.author_from_work || 'Not available'}</p>
+          <p class="detail-item">Publication year: ${book.publish_date || 'Not available'}</p>
+          <p class="detail-item">Publishers: ${book.publishers?.[0] || 'Not available'}</p>
+          <p class="detail-item">Language(s): ${book.languages || 'Not available'}</p>
+          <p class="detail-item">Library: ${book.library || 'Not available'}</p>
+          <p class="detail-item">Borrow date: ${book.borrowDate ? formatDate(book.borrowDate) : 'Not available'}</p>
+          <p class="detail-item">Book loan deadline: ${book.returnDate ? formatDate(book.returnDate) : 'Not available'}</p>
+          <p class="detail-item">Subjects: ${book.subjects?.join(', ') || 'No subjects recorded'}</p>
           <p class="descrizione detail-item">
-            Descrizione: ${book.description || 'Nessuna descrizione disponibile'}
+            Description: ${book.description || 'No available description'}
           </p>
         </div>
       </div>
@@ -294,11 +297,11 @@ export function renderEditBookWin(bookId){
               <input type="text" class="js-library-edit" value="${book.library ? book.library : 'Unknown library' }">
             </div>
             <div>
-              <label>Data Prestito</label>
+              <label>Borrow date</label>
               <input type="date" class="js-borrowdate-edit" value="${book.borrowDate || ''}">
             </div>
             <div>
-              <label>Data Restituzione</label>
+              <label>Book loan deadline</label>
               <input type="date" class="js-returndate-edit" value="${book.returnDate || ''}">
             </div>
             <div>
