@@ -32,13 +32,13 @@ ITA
   - Modifica copertina, autore, descrizione e altri dettagli.
 - **Salvataggio automatico**: I dati rimangono memorizzati anche dopo aver chiuso il browser.
 
-## 💡 Competenze Utilizzate (Sviluppatore Neodiplomato)
+## 💡 Competenze Utilizzate (Da sviluppatore Neodiplomato)
 Questo progetto dimostra le seguenti competenze tecniche e trasversali:
 - **Frontend Basics**:
   - HTML/CSS: Struttura della pagina, stili responsive, grid/flexbox.
   - JavaScript: Logica interattiva, gestione eventi (clic, form).
 - **API esterne**: Comunicazione con Open Library per ottenere dati e immagini dei libri.
-- **Storage locale**: Salvataggio dei prestiti nel browser tramite `localStorage`.
+- **Local Storage**: Salvataggio dei prestiti nel browser tramite `localStorage`.
 - **Debugging**: Risoluzione errori di rete, gestione di risposte API non valide.
 - **Organizzazione codice**: Suddivisione in moduli (es. `books.js`, `finestra.js`).
 - **UI/UX Design**: Design intuitivo con feedback visivi (es. popup di conferma).
