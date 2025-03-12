@@ -21,14 +21,16 @@ function loadFromStorage() {
 export async function borrowBook(book){
   try{
     const work = await fetchWork(book?.works?.[0]?.key);
-    const author_from_work = (await getAuthors(work?.authors?.[0]?.author?.key)).name; 
-    const langKey = book.languages?.[0]?.key; //optional chaining
+    const author_from_work = work?.authors?.[0]?.author?.key
+      ? (await getAuthors(work.authors[0].author.key)).name
+      : 'No author recorded';
+    const langKey = book.languages?.[0]?.key || 'No language recorded'; //optional chaining
     const langName = langKey 
         ? await fetchLanguage(langKey)
-        : 'Unknown language';
+        : 'No language recorded';
     book.work = work;
     book.author_from_work = author_from_work;
-    book.subjects = work?.subjects;
+    book.subjects = work?.subjects || 'No subjects recorded';
     book.description = book.description ? book.description.value : 
       work.description?.value ? work.description?.value : work?.description || 'The description is unavailable'; //in this way if the description is an object we'll take the value of the object, otherwise if it is in the form of a string we keep the string
     book.languages = langName;
@@ -41,9 +43,16 @@ export async function borrowBook(book){
 
 export async function displayEditionResults(work) {
   const resultsBox = document.querySelector('.js-book-list');
-  try {
-    const response = await fetch(`https://openlibrary.org${work}/editions.json`);
-    if (!response.ok) throw new Error('Network response failed');
+  resultsBox.innerHTML = `
+    <div class="book-item skeleton-item">
+      <div class="skeleton" style="width: 5rem; height: 7rem"></div>
+      <div class="book-info">
+      </div>
+    </div>
+  `.repeat(3);
+    try {
+      const response = await fetch(`https://openlibrary.org${work}/editions.json`);
+      if (!response.ok) throw new Error('Network response failed');
     const data = await response.json();
     
     const editionsHTML = await Promise.all(
@@ -56,7 +65,7 @@ export async function displayEditionResults(work) {
         const langKey = ed.languages?.[0]?.key; //optional chaining
         const langName = langKey 
           ? await fetchLanguage(langKey)
-          : 'Unknown language';
+          : 'No language recorded';
 
         return `
           <div class="book-item">
@@ -84,10 +93,10 @@ export async function displayEditionResults(work) {
 
         const borrowFormHTML = `
           <div class="borrow-form-container">
-            <h1>Dettagli Prestito</h1>
+            <h1>Borrow details</h1>
             <form class="borrow-form">
               <div>
-                <label for="library">Biblioteca:</label>
+                <label for="library">Library:</label>
                 <input type="text" id="library" name="library">
               </div>
               <div>
@@ -95,15 +104,15 @@ export async function displayEditionResults(work) {
                 <input type="date" id="borrow-date" name="borrow-date">
               </div>
               <div>
-                <label for="return-date">Data Restituzione:</label>
+                <label for="return-date">Return date:</label>
                 <select id="return-date" name="return-date">
-                  <option value="7">1 settimana</option>
-                  <option value="14">2 settimane</option>
-                  <option value="21">3 settimane</option>
-                  <option value="30">1 mese</option>
+                  <option value="7">in 1 week</option>
+                  <option value="14">in 2 week</option>
+                  <option value="21">in 3 week</option>
+                  <option value="30">a month</option>
                 </select>
               </div>
-              <button type="submit" class="js-confirm-borrow">Conferma Prestito</button>
+              <button type="submit" class="js-confirm-borrow">Confirm</button>
             </form>
           </div>
         `;
@@ -290,11 +299,11 @@ export function renderEditBookWin(bookId){
             </div>
             <div>
               <label>Language</label>
-              <input type="text" class="js-langs-edit" value="${book.languages ? book.languages : 'Unknown library' }">
+              <input type="text" class="js-langs-edit" value="${book.languages ? book.languages : 'No library recorded' }">
             </div>
             <div>
               <label>Library</label>
-              <input type="text" class="js-library-edit" value="${book.library ? book.library : 'Unknown library' }">
+              <input type="text" class="js-library-edit" value="${book.library ? book.library : 'No library recorded' }">
             </div>
             <div>
               <label>Borrow date</label>
@@ -306,7 +315,7 @@ export function renderEditBookWin(bookId){
             </div>
             <div>
               <label>Subjects</label>
-              <input type="text" class="js-subjects-edit" value="${book.subjects ? book.subjects.slice(0,5).join(', ') : 'Unknown subjects'}">
+              <input type="text" class="js-subjects-edit" value="${book.subjects ? book.subjects.slice(0,5).join(', ') : 'No subjects recorded'}">
             </div>
             <div>
               <label for="description-camp">Description</label>
