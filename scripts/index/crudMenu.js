@@ -52,7 +52,7 @@ export function renderCrudMenu(){
 
 }
 
-function renderAddBook(){
+export function renderAddBook(){
   let contentHTML = `
     <div class="add-book-wrapper">
       <div class ="search-book-container">

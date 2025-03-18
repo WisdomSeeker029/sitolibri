@@ -1,6 +1,7 @@
 import {fetchWork, fetchLanguage, getAuthors, getCoverImg} from "../scripts/index/crudMenu/ricerche.js";
 import { renderWindow,setOperationResult } from "../scripts/utils/finestra.js";
 import { formatDate } from "../scripts/utils/other-utils.js";
+import {renderAddBook} from '../scripts/index/crudMenu.js';
 
 export let borrowedBooks = [];
 
@@ -43,13 +44,6 @@ export async function borrowBook(book){
 
 export async function displayEditionResults(work) {
   const resultsBox = document.querySelector('.js-book-list');
-  resultsBox.innerHTML = `
-    <div class="book-item skeleton-item">
-      <div class="skeleton" style="width: 5rem; height: 7rem"></div>
-      <div class="book-info">
-      </div>
-    </div>
-  `.repeat(3);
     try {
       const response = await fetch(`https://openlibrary.org${work}/editions.json`);
       if (!response.ok) throw new Error('Network response failed');
@@ -197,7 +191,7 @@ export async function renderBorrowedBooks(){
   let booksHTML = '';
   console.log(borrowedBooks);
   try{
-    if(borrowedBooks){
+    if(borrowedBooks && borrowedBooks.length > 0){
       booksHTML = await Promise.all(
         borrowedBooks.map(async (book) => {
           return `<div class="libro" data-book-id="${book.key}">
@@ -206,13 +200,24 @@ export async function renderBorrowedBooks(){
             <h5>${book.author_name ? book.author_name : (book.author_from_work ? book.author_from_work : 'Autore non conosciuto')}</h5>
             <h6>${book?.publishers?.[0] || 'Editore non disponibile'}</h6>
           </div>`;
-        }
-      )
+        })
       );
       console.log(booksHTML);
+    }else {
+      document.querySelector('.spazio-libri').style.display = "block";
+      booksHTML = [`
+        <div class="empty-state">
+          <p>There are no borrowed books</p>
+          <p>Add your first book by clicking on <span class="add-book-span">"<img src="img/icons/library_add.png" class="icon"> Add book"</span></p>
+        </div>
+      `];
     }
 
     document.querySelector('.spazio-libri').innerHTML = booksHTML.join(''); // senza il join si avrebbe una virgola tra un libro e l'altro in quanto restituirebbe un vettore
+
+    if(document.querySelector('.add-book-span')){
+      document.querySelector('.add-book-span').addEventListener('click',()=> renderAddBook())
+    }
 
     document.querySelectorAll('.libro').forEach((lib) => {
       const {bookId} = lib.dataset;

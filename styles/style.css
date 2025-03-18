@@ -35,23 +35,6 @@ body{
   /* padding: 0.875em 0.75em; */
 }
 
-/*
-
-.topnav > *{
-  color: wheat;
-  text-decoration: none;
-  padding: 0.875em 0.75em; //14px 12px;
-}
-
-.topnav a{
-  transition: color 300ms,background-color 300ms;
-}
-
-.topnav a:hover , .topnav a:active{
-  background-color: wheat;
-  color: #a52a2a;
-}
-*/
 
 /*Ciò che segue è il css per i comandi CRUD*/
 
@@ -93,7 +76,6 @@ body{
     display: inline-block;
   }
 }
-
 
 
 dialog{
@@ -176,6 +158,7 @@ book-res
 .libro > img {
   height: 18.75rem; /* 300px; */
   object-fit: cover;
+  max-width: 100%;
 }
 
 .libro{
@@ -272,4 +255,25 @@ book-res
   dialog{
     width: max(25rem,70%); /* max(400px,70%); */
   }
+}
+
+.empty-state {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+}
+
+.empty-state p {
+  margin: 0.5rem 0;
+  text-align: start;
+}
+
+.add-book-span:hover{
+  cursor: pointer;
+}
+
+.add-book-span .icon {
+  width: 1.875rem;
+  vertical-align: middle;
+  padding: 0.625em 0;
 }
