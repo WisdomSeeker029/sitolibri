@@ -25,7 +25,11 @@ export async function borrowBook(book){
     const author_from_work = work?.authors?.[0]?.author?.key
       ? (await getAuthors(work.authors[0].author.key)).name
       : 'No author recorded';
+<<<<<<< HEAD:sitolibri/data/books.js
     const langKey = book.languages?.[0]?.key; //optional chaining
+=======
+    const langKey = book.languages?.[0]?.key || 'No language recorded'; //optional chaining
+>>>>>>> aeea3e1fbcd1b5f72353adf4d521b0510c2e33b5:data/books.js
     const langName = langKey 
         ? await fetchLanguage(langKey)
         : 'No language recorded';
@@ -132,7 +136,10 @@ export async function displayEditionResults(work) {
           data.returnDate = returnDate.toISOString().split('T')[0]; //split('T')[0] in this way it only gets the date
 
           try {
+<<<<<<< HEAD:sitolibri/data/books.js
             setOperationResult('Adding the book...');
+=======
+>>>>>>> aeea3e1fbcd1b5f72353adf4d521b0510c2e33b5:data/books.js
             await borrowBook(data);
             await renderBorrowedBooks();
             setOperationResult('The book has been added');
@@ -193,7 +200,10 @@ export async function renderBorrowedBooks(){
   console.log(borrowedBooks);
   try{
     if(borrowedBooks && borrowedBooks.length > 0){
+<<<<<<< HEAD:sitolibri/data/books.js
       document.querySelector('.spazio-libri').style.display = "grid";
+=======
+>>>>>>> aeea3e1fbcd1b5f72353adf4d521b0510c2e33b5:data/books.js
       booksHTML = await Promise.all(
         borrowedBooks.map(async (book) => {
           return `<div class="libro" data-book-id="${book.key}">

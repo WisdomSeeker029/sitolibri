@@ -29,7 +29,10 @@ body{
 }
 
 .title-space > *{
+<<<<<<< HEAD:sitolibri/styles/style.css
   font-size: 2rem;
+=======
+>>>>>>> aeea3e1fbcd1b5f72353adf4d521b0510c2e33b5:styles/style.css
   color: wheat;
   margin: 0;
   /* text-decoration: none; */
@@ -158,6 +161,10 @@ book-res
 
 .libro > img {
   height: 18.75rem; /* 300px; */
+<<<<<<< HEAD:sitolibri/styles/style.css
+=======
+  object-fit: cover;
+>>>>>>> aeea3e1fbcd1b5f72353adf4d521b0510c2e33b5:styles/style.css
   max-width: 100%;
 }
 
@@ -276,6 +283,7 @@ book-res
   width: 1.875rem;
   vertical-align: middle;
   padding: 0.625em 0;
+<<<<<<< HEAD:sitolibri/styles/style.css
 }
 
 /*loader for when it fetchs the books*/
@@ -292,3 +300,6 @@ book-res
   content:"Loading..."
 }
 @keyframes l4 {to{clip-path: inset(0 -1ch 0 0)}}
+=======
+}
+>>>>>>> aeea3e1fbcd1b5f72353adf4d521b0510c2e33b5:styles/style.css

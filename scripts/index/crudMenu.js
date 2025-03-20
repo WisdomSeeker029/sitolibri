@@ -70,6 +70,7 @@ export function renderAddBook(){
     const query = searchInput.value.trim();
     resultsBox.innerHTML = '<div class="loader"></div>';
     if(query){
+<<<<<<< HEAD:sitolibri/scripts/index/crudMenu.js
         try {
             const results = await searchBooks(query);
             displayBookResults(results.slice(0,10)); // Show only first 10 results
@@ -77,6 +78,15 @@ export function renderAddBook(){
             console.error('Error during search:', error);
             resultsBox.innerHTML = '<p>An error occurred during the fetch.</p>';
         }
+=======
+      try {
+        const results = await searchBooks(query);
+        displayBookResults(results.slice(0,10)); //mostra solo i primi 10
+      } catch (error) {
+        console.error('Errore durante la ricerca:', error);
+        resultsBox.innerHTML = '<p>An error occured during the fetch.</p>';
+      }
+>>>>>>> aeea3e1fbcd1b5f72353adf4d521b0510c2e33b5:scripts/index/crudMenu.js
     }
   }
 
