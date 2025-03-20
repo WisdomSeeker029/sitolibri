@@ -105,6 +105,6 @@ export async function getAuthors(author_key){
     const data = await response.json();
     return data;
   }catch(error){
-    console.error('Errore:', error);
+    console.error(error);
   }
 }

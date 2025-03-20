@@ -1,27 +1,27 @@
 import { returnBook,renderEditBookWin, renderBooksDetails} from "../../data/books.js";
-import {borrowedBooks, renderBorrowedBooks,displayBookList,updateBookDetails,displayEditionResults} from "../../data/books.js";
+import {renderBorrowedBooks,displayBookList,updateBookDetails,displayEditionResults} from "../../data/books.js";
 import {searchBooks} from "./crudMenu/ricerche.js";
 import {renderWindow,setOperationResult} from "../utils/finestra.js";
 
 export function renderCrudMenu(){
   let crudMenuHTML = '';
   crudMenuHTML += `
-    <span class="icon-crud add js-add-book">
+    <button class="icon-crud add js-add-book">
       <img src="img/icons/library_add.png" alt="Aggiungi">
-      <p>Aggiungi libro</p>
-    </span>
-    <span class="icon-crud delete js-delete-book">
+      <p>Add book</p>
+    </button>
+    <button class="icon-crud delete js-delete-book">
       <img src="img/icons/library_delete.png" alt="Elimina">
-      <p>Elimina libro</p>
-    </span>
-    <span class="icon-crud edit js-edit-book">
+      <p>Delete a book</p>
+    </button>
+    <button class="icon-crud edit js-edit-book">
       <img src="img/icons/edit.png" alt="Modifica">
-      <p>Modifica dettagli</p>
-    </span>
-    <span class="icon-crud view js-view-book">
+      <p>Edit details</p>
+    </button>
+    <button class="icon-crud view js-view-book">
       <img src="img/icons/fullscreen.png" alt="Visualizza">
-      <p>Visualizza ulteriori dettagli</p>
-    </span>
+      <p>View more details</p>
+    </button>
   `;
   document.querySelector('.crud-bar').innerHTML = crudMenuHTML;
   
@@ -52,12 +52,12 @@ export function renderCrudMenu(){
 
 }
 
-function renderAddBook(){
+export function renderAddBook(){
   let contentHTML = `
     <div class="add-book-wrapper">
       <div class ="search-book-container">
-        <input type="search" class="search-input" placeholder="Cerca libro...">
-        <input type="button" class="search-book-button" value="Cerca">
+        <input type="search" class="search-input" placeholder="Search for a book libro...">
+        <input type="button" class="search-book-button" value="Search">
       </div>
     </div>
   `;
@@ -66,43 +66,49 @@ function renderAddBook(){
   const searchInput = document.querySelector('.search-input');
   const searchButton = document.querySelector('.search-book-button');
 
-  searchButton.addEventListener('click', async () => {
+  async function performSearch() {
     const query = searchInput.value.trim();
+    resultsBox.innerHTML = '<div class="loader"></div>';
     if(query){
-      try {
-        const results = await searchBooks(query);
-        displayBookResults(results.slice(0,10)); //mostra solo i primi 10
-      } catch (error) {
-        console.error('Errore durante la ricerca:', error);
-        resultsBox.innerHTML = '<p>Si è verificato un errore durante la ricerca.</p>';
-      }
+        try {
+            const results = await searchBooks(query);
+            displayBookResults(results.slice(0,10)); // Show only first 10 results
+        } catch (error) {
+            console.error('Error during search:', error);
+            resultsBox.innerHTML = '<p>An error occurred during the fetch.</p>';
+        }
     }
-  });
+  }
+
+  searchButton.addEventListener('click', performSearch);
+  searchInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') performSearch() });
 
   //funzione per visualizzare i risultati
   async function displayBookResults(results) {
     if(results.length === 0){
-      resultsBox.innerHTML = '<p>Nessun risultato trovato</p>';
+      resultsBox.innerHTML = '<p>No results found</p>';
       return;
     }
 
     let booksHTML = '';
     for (const book of results) {
-      const img = book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg?default=false` : 'img/books/book.jpg'; //non è necessario fare il fetch perchè è solo un immagine
+      const img = book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg?default=false` : 'img/books/book.jpg'; 
       booksHTML += `
       <div class="book-item">
-        <img src="${img /* || 'img/books/book.jpg' */}">
+        <img src="${img}">
         <div class="book-info">
           <h3>${book.title}</h3>
-          <p>Autore: ${book.author_name ? book.author_name.slice(0, 5).join(', ') : 'Sconosciuto'}</p>
-          <p>Anno di pubblicazione: ${book.first_publish_year || 'Sconosciuto'}</p>
-          <button class="js-view-editions-button" data-work-ref="${/*book.edition_key[0]*/ book.key}">Vedi edizioni</button>
+          <p>Author(s): ${book.author_name ? book.author_name.slice(0, 5).join(', ') : 'Not available'}</p>
+          <p>Publication year: ${book.first_publish_year || 'Not available'}</p>
+          <button class="js-view-editions-button" data-work-ref="${book.key}">View editions</button>
         </div>
       </div>`;
     }
     resultsBox.innerHTML = booksHTML;
     document.querySelectorAll('.js-view-editions-button').forEach((button) => {
       button.addEventListener('click', async () => {
+        document.querySelector('.book-results').innerHTML = '<div class="loader"></div>';
         const {workRef} = button.dataset;
         await displayEditionResults(workRef);
       });
@@ -112,7 +118,7 @@ function renderAddBook(){
 
 async function renderDeleteBookPopup(){
   const action_class = 'delete-book-button';
-  const actionbtn_content = 'Restituisci libro';
+  const actionbtn_content = 'Return the book';
   await displayBookList(action_class,actionbtn_content);
 
   document.querySelectorAll('.js-delete-book-button').forEach((button) => {
@@ -129,7 +135,7 @@ async function renderDeleteBookPopup(){
 
 async function renderEditDetails(){
   const action_class = 'edit-details-button';
-  const actionbtn_content = 'Modifica info';
+  const actionbtn_content = 'Edit details';
   await displayBookList(action_class,actionbtn_content);
 
   document.querySelectorAll('.js-edit-details-button').forEach((button) => {
@@ -145,20 +151,26 @@ async function renderEditDetails(){
           publishers: document.querySelector('.js-publs-edit').value,
           languages: document.querySelector('.js-langs-edit').value,
           library: document.querySelector('.js-library-edit').value,
+          borrowDate: document.querySelector('.js-borrowdate-edit').value,
+          returnDate: document.querySelector('.js-returndate-edit').value,
           subjects: document.querySelector('.js-subjects-edit').value,
           description: document.querySelector('.js-description-edit').value
         }; //it does not contain all the properties of the book object, only the editable ones
         updateBookDetails(bookId,editedDetails);
-        renderBorrowedBooks();
         setOperationResult('Changes have been saved');
+        document.querySelector('.window-content-wrapper').innerHTML = '';
+        setTimeout(() => {
+          document.querySelector('dialog').close();
+        }, 2000);
       })
     })
   })
+  await renderBorrowedBooks();
 }
 
 async function renderViewBookList(){
   const action_class = 'view-details-button';
-  const actionbtn_content = 'Vedi dettagli';
+  const actionbtn_content = 'View more details';
   await displayBookList(action_class,actionbtn_content);
   document.querySelectorAll('.js-view-details-button').forEach((button) => {
     button.addEventListener('click',() => {
