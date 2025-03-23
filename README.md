@@ -22,8 +22,6 @@ ITA
    - **Visualizza i libri**: I libri aggiunti appariranno come carte nella sezione principale. Clicca su una carta per vedere dettagli come data di prestito e scadenza.
    - **Modifica o elimina**: Usa i pulsanti "Modifica" (✏️) o "Elimina" (🗑️) per aggiornare informazioni o restituire un libro.
 
-> 🔍 **Suggerimento**: 
-
 ## 📚 Funzionalità Principali
 - **Ricerca libri**: Trova qualsiasi libro tramite l'API di Open Library.
 - **Gestione prestiti**:
