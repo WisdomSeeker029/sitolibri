@@ -70,7 +70,6 @@ export function renderAddBook(){
     const query = searchInput.value.trim();
     resultsBox.innerHTML = '<div class="loader"></div>';
     if(query){
-<<<<<<< HEAD:sitolibri/scripts/index/crudMenu.js
         try {
             const results = await searchBooks(query);
             displayBookResults(results.slice(0,10)); // Show only first 10 results
@@ -78,15 +77,6 @@ export function renderAddBook(){
             console.error('Error during search:', error);
             resultsBox.innerHTML = '<p>An error occurred during the fetch.</p>';
         }
-=======
-      try {
-        const results = await searchBooks(query);
-        displayBookResults(results.slice(0,10)); //mostra solo i primi 10
-      } catch (error) {
-        console.error('Errore durante la ricerca:', error);
-        resultsBox.innerHTML = '<p>An error occured during the fetch.</p>';
-      }
->>>>>>> aeea3e1fbcd1b5f72353adf4d521b0510c2e33b5:scripts/index/crudMenu.js
     }
   }
 
@@ -113,7 +103,8 @@ export function renderAddBook(){
           <p>Publication year: ${book.first_publish_year || 'Not available'}</p>
           <button class="js-view-editions-button" data-work-ref="${book.key}">View editions</button>
         </div>
-      </div>`;
+      </div>
+      <hr>`;
     }
     resultsBox.innerHTML = booksHTML;
     document.querySelectorAll('.js-view-editions-button').forEach((button) => {
@@ -133,9 +124,8 @@ async function renderDeleteBookPopup(){
 
   document.querySelectorAll('.js-delete-book-button').forEach((button) => {
     button.addEventListener('click', async () => {
-      const {bookId} = button.dataset;
-      console.log(bookId);
-      returnBook(bookId);
+      const {borrowId} = button.dataset;
+      returnBook(borrowId);
       await renderBorrowedBooks();
       await renderDeleteBookPopup();
       setOperationResult('The book has been deleted');
@@ -150,8 +140,8 @@ async function renderEditDetails(){
 
   document.querySelectorAll('.js-edit-details-button').forEach((button) => {
     button.addEventListener('click', ()=> {
-      const {bookId} = button.dataset;
-      renderEditBookWin(bookId);
+      const {borrowId} = button.dataset;
+      renderEditBookWin(borrowId);
       const submit_edit_btn = document.querySelector('.js-submit-changes');
       submit_edit_btn.addEventListener('click', () => {
         let editedDetails = {
@@ -166,7 +156,7 @@ async function renderEditDetails(){
           subjects: document.querySelector('.js-subjects-edit').value,
           description: document.querySelector('.js-description-edit').value
         }; //it does not contain all the properties of the book object, only the editable ones
-        updateBookDetails(bookId,editedDetails);
+        updateBookDetails(borrowId,editedDetails);
         setOperationResult('Changes have been saved');
         document.querySelector('.window-content-wrapper').innerHTML = '';
         setTimeout(() => {
@@ -184,9 +174,8 @@ async function renderViewBookList(){
   await displayBookList(action_class,actionbtn_content);
   document.querySelectorAll('.js-view-details-button').forEach((button) => {
     button.addEventListener('click',() => {
-      const {bookId} = button.dataset;
-      console.log(bookId);
-      renderBooksDetails(bookId);
+      const {borrowId} = button.dataset;
+      renderBooksDetails(borrowId);
     });
   });
 }

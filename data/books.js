@@ -25,24 +25,21 @@ export async function borrowBook(book){
     const author_from_work = work?.authors?.[0]?.author?.key
       ? (await getAuthors(work.authors[0].author.key)).name
       : 'No author recorded';
-<<<<<<< HEAD:sitolibri/data/books.js
     const langKey = book.languages?.[0]?.key; //optional chaining
-=======
-    const langKey = book.languages?.[0]?.key || 'No language recorded'; //optional chaining
->>>>>>> aeea3e1fbcd1b5f72353adf4d521b0510c2e33b5:data/books.js
     const langName = langKey 
         ? await fetchLanguage(langKey)
         : 'No language recorded';
     book.work = work;
     book.author_from_work = author_from_work;
-    book.subjects = work?.subjects || 'No subjects recorded';
+    book.subjects = work?.subjects || ['No subjects recorded'];
     book.description = book.description ? book.description.value : 
       work.description?.value ? work.description?.value : work?.description || 'The description is unavailable'; //in this way if the description is an object we'll take the value of the object, otherwise if it is in the form of a string we keep the string
     book.languages = langName;
+    book.borrowId = `${Date.now()}`; // Add unique identifier
     borrowedBooks.push(book);
     saveToStorage();
   }catch(error){
-    console.error('Errore',error);
+    console.error('Error',error);
   }
 }
 
@@ -70,9 +67,9 @@ export async function displayEditionResults(work) {
             <img src="${coverUrl}" alt="cover">
             <div class="book-info">
               <h3>${ed.title}</h3>
-              <p>${ed.publishers?.[0] || 'Editore sconosciuto'}. ${ed.publish_date || 'Data sconosciuta'}</p>
+              <p>${ed.publishers?.[0] || 'Publisher unknown'}. ${ed.publish_date || 'No date recorded'}</p>
               <p>In ${langName}</p>
-              <button class="js-add-book-button" data-book-id="${ed.key}">Aggiungi libro</button>
+              <button class="js-add-book-button" data-book-id="${ed.key}">Add book</button>
             </div>
           </div>
         `;
@@ -136,10 +133,7 @@ export async function displayEditionResults(work) {
           data.returnDate = returnDate.toISOString().split('T')[0]; //split('T')[0] in this way it only gets the date
 
           try {
-<<<<<<< HEAD:sitolibri/data/books.js
             setOperationResult('Adding the book...');
-=======
->>>>>>> aeea3e1fbcd1b5f72353adf4d521b0510c2e33b5:data/books.js
             await borrowBook(data);
             await renderBorrowedBooks();
             setOperationResult('The book has been added');
@@ -155,7 +149,7 @@ export async function displayEditionResults(work) {
     })
   } catch (error) {
     console.error('Errore:', error);
-    resultsBox.innerHTML = '<p>Si è verificato un errore nel caricamento delle edizioni.</p>';
+    resultsBox.innerHTML = '<p>An error occurred while loading the editions.</p>';
   }
 }
 
@@ -164,10 +158,10 @@ function saveToStorage() {
   localStorage.setItem('borrowedBooks', JSON.stringify(borrowedBooks));
 }
 
-export function returnBook(key){
+export function returnBook(borrowId){
   let newBorrowedBooks = [];
   borrowedBooks.forEach((book) => {
-    if(book.key !== key){
+    if(book.borrowId !== borrowId){
       newBorrowedBooks.push(book);
     }
   });
@@ -200,17 +194,14 @@ export async function renderBorrowedBooks(){
   console.log(borrowedBooks);
   try{
     if(borrowedBooks && borrowedBooks.length > 0){
-<<<<<<< HEAD:sitolibri/data/books.js
       document.querySelector('.spazio-libri').style.display = "grid";
-=======
->>>>>>> aeea3e1fbcd1b5f72353adf4d521b0510c2e33b5:data/books.js
       booksHTML = await Promise.all(
         borrowedBooks.map(async (book) => {
-          return `<div class="libro" data-book-id="${book.key}">
+          return `<div class="libro" data-book-id="${book.key}" data-borrow-id="${book.borrowId}">
             <img src="${book?.covers?.[0] ? 'https://covers.openlibrary.org/b/id/'+book?.covers?.[0]+'-M.jpg' : 'img/books/book.jpg'}" alt="libro">
-            <h4>${book?.title || 'Titolo non disponibile'}</h4>
-            <h5>${book.author_name ? book.author_name : (book.author_from_work ? book.author_from_work : 'Autore non conosciuto')}</h5>
-            <h6>${book?.publishers?.[0] || 'Editore non disponibile'}</h6>
+            <h4>${book?.title || 'Title not available'}</h4>
+            <h5>${book.author_name ? book.author_name : (book.author_from_work ? book.author_from_work : 'Author information not available')}</h5>
+            <h6>${book?.publishers?.[0] || 'Publisher not available'}</h6>
           </div>`;
         })
       );
@@ -232,9 +223,9 @@ export async function renderBorrowedBooks(){
     }
 
     document.querySelectorAll('.libro').forEach((lib) => {
-      const {bookId} = lib.dataset;
+      const {borrowId} = lib.dataset;
       lib.addEventListener("click", () => {
-        renderBooksDetails(bookId);
+        renderBooksDetails(borrowId);
       });
     });
   }catch(error){
@@ -249,9 +240,9 @@ export async function displayBookList(action_class,actionbtn_content){
       return `
       <div class="book">
         <p>Titolo: <b>${book.title}</b></p>
-        <p>Autore: ${book.author_name ? book.author_name : 
-        book.author_from_work ? book.author_from_work : 'Autore non conosciuto'}</p>
-        <button class="js-${action_class}" data-book-id="${book.key}">${actionbtn_content}</button>
+        <p>Autore: ${book.author_name ? book.author_name :
+        book.author_from_work ? book.author_from_work : 'Author information not available'}</p>
+        <button class="js-${action_class}" data-book-id="${book.key}" data-borrow-id="${book.borrowId}">${actionbtn_content}</button>
       </div>`;
     })
   );
@@ -260,10 +251,10 @@ export async function displayBookList(action_class,actionbtn_content){
   book_list.innerHTML = booksHTML.join('');
 }
 
-export function renderBooksDetails(bookId){
+export function renderBooksDetails(borrowId){
   let booksDetailsHTML = '';
   borrowedBooks.forEach((book) => {
-    if(book.key === bookId){
+    if(book.borrowId === borrowId){
       booksDetailsHTML = `
       <div class="book-details-container">
         <div class="dettagli-img">
@@ -278,7 +269,7 @@ export function renderBooksDetails(bookId){
           <p class="detail-item">Library: ${book.library || 'Not available'}</p>
           <p class="detail-item">Borrow date: ${book.borrowDate ? formatDate(book.borrowDate) : 'Not available'}</p>
           <p class="detail-item">Book loan deadline: ${book.returnDate ? formatDate(book.returnDate) : 'Not available'}</p>
-          <p class="detail-item">Subjects: ${book.subjects?.join(', ') || 'No subjects recorded'}</p>
+          <p class="detail-item">Subjects: ${book.subjects?.join(',')}</p>
           <p class="descrizione detail-item">
             Description: ${book.description || 'No available description'}
           </p>
@@ -295,7 +286,7 @@ export function renderEditBookWin(bookId){
   borrowedBooks.forEach((book) => {
     if(book.key === bookId){
       HTML = `
-        <h1>Modifica dettagli</h1>
+        <h1>Edit details</h1>
         <div class="edit-book-container">
           <div class="edit-book-wrapper">
             <div>
@@ -308,7 +299,7 @@ export function renderEditBookWin(bookId){
             </div>
             <div>
               <label>Publish date</label>
-              <input type="text" class="js-publdate-edit"  value="${book.publish_date || 'Anno di pubblicazione sconosciuto'}">
+              <input type="text" class="js-publdate-edit"  value="${book.publish_date || 'Publication year unknown'}">
             </div>
             <div>
               <label>Publisher</label>
@@ -316,7 +307,7 @@ export function renderEditBookWin(bookId){
             </div>
             <div>
               <label>Language</label>
-              <input type="text" class="js-langs-edit" value="${book.languages ? book.languages : 'No library recorded' }">
+              <input type="text" class="js-langs-edit" value="${book.languages ? book.languages : 'Library not recorded' }">
             </div>
             <div>
               <label>Library</label>
@@ -332,7 +323,7 @@ export function renderEditBookWin(bookId){
             </div>
             <div>
               <label>Subjects</label>
-              <input type="text" class="js-subjects-edit" value="${book.subjects ? book.subjects.slice(0,5).join(', ') : 'No subjects recorded'}">
+              <input type="text" class="js-subjects-edit" value="${book.subjects ? book.subjects.slice(0,5).join(', ') : 'Subjects not recorded'}">
             </div>
             <div>
               <label for="description-camp">Description</label>

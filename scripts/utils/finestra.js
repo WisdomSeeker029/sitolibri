@@ -1,5 +1,4 @@
 export function renderWindow(content){
-
   if(!content){
     content = "";
   }
