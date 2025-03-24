@@ -26,20 +26,33 @@ export async function borrowBook(book){
       ? (await getAuthors(work.authors[0].author.key)).name
       : 'No author recorded';
     const langKey = book.languages?.[0]?.key; //optional chaining
-    const langName = langKey 
+    const langName = langKey
         ? await fetchLanguage(langKey)
         : 'No language recorded';
     book.work = work;
     book.author_from_work = author_from_work;
     book.subjects = work?.subjects || ['No subjects recorded'];
-    book.description = book.description ? book.description.value : 
+    book.description = book.description ? book.description.value :
       work.description?.value ? work.description?.value : work?.description || 'The description is unavailable'; //in this way if the description is an object we'll take the value of the object, otherwise if it is in the form of a string we keep the string
     book.languages = langName;
     book.borrowId = `${Date.now()}`; // Add unique identifier
-    borrowedBooks.push(book);
+        borrowedBooks.push(book);
     saveToStorage();
+    
+    // Verify book has been actually added
+    const added = borrowedBooks.find(b => b.borrowId === book.borrowId);
+    if (!added) {
+      throw new Error('Failed to add book');
+    }
+    
+    setOperationResult('The book has been added');
+    document.querySelector('.window-content-wrapper').innerHTML = '';
+    setTimeout(() => {
+      document.querySelector('dialog').close();
+    }, 2000);
   }catch(error){
     console.error('Error',error);
+    setOperationResult(`Error: ${error.message}`);
   }
 }
 
@@ -136,11 +149,6 @@ export async function displayEditionResults(work) {
             setOperationResult('Adding the book...');
             await borrowBook(data);
             await renderBorrowedBooks();
-            setOperationResult('The book has been added');
-            document.querySelector('.window-content-wrapper').innerHTML = '';
-            setTimeout(() => {
-              document.querySelector('dialog').close();
-            }, 2000);
           } catch (error) {
             setOperationResult(`Error: ${error.message}`);
           }
@@ -159,15 +167,30 @@ function saveToStorage() {
 }
 
 export function returnBook(borrowId){
-  let newBorrowedBooks = [];
-  borrowedBooks.forEach((book) => {
-    if(book.borrowId !== borrowId){
-      newBorrowedBooks.push(book);
+  try {
+    const initialCount = borrowedBooks.length;
+    
+    let newBorrowedBooks = [];
+    borrowedBooks.forEach((book) => {
+      if(book.borrowId !== borrowId){
+        newBorrowedBooks.push(book);
+      }
+    });
+    
+    // Verify book was removed
+    if (newBorrowedBooks.length === initialCount) {
+      throw new Error('Book not found in library');
     }
-  });
-  borrowedBooks = newBorrowedBooks;
-  saveToStorage();
-  loadFromStorage();
+    
+    borrowedBooks = newBorrowedBooks;
+    saveToStorage();
+    loadFromStorage();
+    
+    setOperationResult('The book has been successfully deleted');
+  } catch (error) {
+    console.error('Error', error);
+    setOperationResult(`Error: ${error.message}`);
+  }
 }
 
 export function updateBookDetails(bookId,editedDetails){
