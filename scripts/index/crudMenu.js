@@ -59,20 +59,51 @@ export function renderAddBook(){
         <input type="search" class="search-input" placeholder="Search for a book libro...">
         <input type="button" class="search-book-button" value="Search">
       </div>
+      <div class="pagination-controls" hidden>
+        <button class="pagination-btn prev" disabled>Previous</button>
+        <span class="page-info"></span>
+        <button class="pagination-btn next" disabled>Next</button>
+      </div>
     </div>
   `;
   renderWindow(contentHTML);
+  
   const resultsBox = document.querySelector('.js-book-list');
   const searchInput = document.querySelector('.search-input');
   const searchButton = document.querySelector('.search-book-button');
+  const paginationControls = document.querySelector('.pagination-controls');
+  const prevButton = document.querySelector('.pagination-btn.prev');
+  const nextButton = document.querySelector('.pagination-btn.next');
+  const pageInfo = document.querySelector('.page-info');
+  
+  let currentPage = 1;
+  let resultsPerPage = 10;
+  let totalResults = 0;
+  let allResults = [];
+
+  searchButton.addEventListener('click', performSearch);
+  searchInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') performSearch() 
+  });
+
+  function updatePaginationControls() {
+    const totalPages = Math.ceil(totalResults / resultsPerPage);
+    paginationControls.hidden = totalPages <= 1;
+    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+    prevButton.disabled = currentPage === 1;
+    nextButton.disabled = currentPage === totalPages;
+  }
 
   async function performSearch() {
     const query = searchInput.value.trim();
     resultsBox.innerHTML = '<div class="loader"></div>';
     if(query){
         try {
-            const results = await searchBooks(query);
-            displayBookResults(results.slice(0,10)); // Show only first 10 results
+            allResults = await searchBooks(query);
+            totalResults = allResults.length;
+            currentPage = 1;
+            updatePaginationControls();
+            displayBookResults();
         } catch (error) {
             console.error('Error during search:', error);
             resultsBox.innerHTML = '<p>An error occurred during the fetch.</p>';
@@ -80,20 +111,32 @@ export function renderAddBook(){
     }
   }
 
-  searchButton.addEventListener('click', performSearch);
-  searchInput.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') performSearch() });
+  prevButton.addEventListener('click', () => {
+    currentPage--;
+    updatePaginationControls();
+    displayBookResults();
+  });
+
+  nextButton.addEventListener('click', () => {
+    currentPage++;
+    updatePaginationControls();
+    displayBookResults();
+  });
 
   //funzione per visualizzare i risultati
-  async function displayBookResults(results) {
-    if(results.length === 0){
+  async function displayBookResults() {
+    const startIndex = (currentPage - 1) * resultsPerPage;
+    const endIndex = startIndex + resultsPerPage;
+    const pageResults = allResults.slice(startIndex, endIndex);
+
+    if(pageResults.length === 0){
       resultsBox.innerHTML = '<p>No results found</p>';
       return;
     }
 
     let booksHTML = '';
-    for (const book of results) {
-      const img = book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg?default=false` : 'img/books/book.jpg'; 
+    for (const book of pageResults) {
+      const img = book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg?default=false` : 'img/books/book.jpg';
       booksHTML += `
       <div class="book-item">
         <img src="${img}">
@@ -113,7 +156,7 @@ export function renderAddBook(){
         const {workRef} = button.dataset;
         await displayEditionResults(workRef);
       });
-    })
+    });
   }
 }
 
