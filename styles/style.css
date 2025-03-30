@@ -237,15 +237,32 @@ book-res
 
 .book-details{
   flex: 2;
+  min-width: 0; /* Crucial for allowing flex item to shrink */
 }
 
 .book-details-container{
   /* Use CSS Grid for the two-column layout */
   display: flex;
   flex-direction: column;
+  padding: 0.625em; /* 10px; */
+  max-width: 100%; /* Ensure the container does not exceed the dialog width */
   gap: 1.7rem;
   flex-wrap: wrap;
 }
+
+.book-details .detail-item,
+.book-details .descrizione {
+  word-wrap: break-word; /* Older property, good fallback */
+  overflow-wrap: break-word; /* Standard property for breaking long words/strings */
+  /* Optional: Add vertical scroll if needed, though wrapping is usually preferred */
+  overflow-y: auto;
+  /* Optional: Ensure text doesn't overflow horizontally if wrapping fails */
+   white-space: normal; /* Ensure text wraps normally */
+   max-width: 100%; /* Prevent exceeding parent width */
+   overflow-x: hidden; /* Hide horizontal overflow if absolutely necessary */
+   display: block;/* Ensure block behavior helps wrapping */
+}
+
 
 @media screen and (min-width: 48rem) { /*(min-width: 768px) in this way in smaller devices it will still be readable*/
   .book-details-container {
